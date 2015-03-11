@@ -1,0 +1,44 @@
+%\documentclass[11pt]{article}
+%\begin{document}
+\section{Specifications for Operating the MOSES Instrument}
+\hrulefill
+\\
+Specifications...
+\begin{enumerate}
+  \item Operate power systems on the instrument. The power systems include: 
+	\begin{enumerate}
+		\item Shutter Driver
+		\item ROE
+		\item Premod Filter
+		\item Temperature Control Systems
+		\item Voltage Regulators
+		\item H-alpha Camera
+	\end{enumerate}
+The flight software is directed to turn on/off power systems through the HLP link.
+
+  \item Command the read-out electronics (ROE). This is accomplished using an RS-422 serial connection between the FC and the ROE. Common task include: commanding exposures, flushing the CCDs, and requesting housekeeping data.
+
+  \item Receive and save science data. The ROE sends science data over a ?32 Mbit/sec? parallel connection. The FSW should be fast enough so as to not miss any science data. 
+
+  \item Send science data over telemetry. NASA has provided a 10 Mbit/sec serial line that connects with a radio to the ground. During the course of the mission, the FSW should send as much science data back to earth as possible to mitigate data loss from the harsh re-entry environment.
+
+  \item Respond to timers and uplinks. Timers are single lines provided by NASA that instruct the instrument when to execute the different parts of the experiment. Timers include: 
+	\begin{enumerate}
+		\item Dark Exposure Start
+		\item Data Start
+		\item Data Stop
+		\item Sleep
+	\end{enumerate}
+dark exposure start, data start, data stop, and sleep. Dark exposures are those which don’t open the shutter during the data gathering phase of the science timeline. Uplinks are similar to timers in that they have the same functionality, except they are tied to a physical button on the ground. Using this interface, a user could control the experiment from just the push-button on the GSE. 
+
+  \item Respond to HLP packets. These packets are sent by the EGSE software on the ground, and provide an additional interface to control the instrument. Two RS-232 connections are provided by NASA to facilitate this interface: HKUP and HKDOWN. Possible types of HLP packets include:
+	\begin{enumerate}
+		\item Uplink
+		\item Shell
+		\item Power
+		\item Housekeeping Requests
+		\item Mission Data Aquisition Requests
+	\end{enumerate}
+	
+\end{enumerate}
+

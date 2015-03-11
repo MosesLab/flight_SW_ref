@@ -1,0 +1,141 @@
+%\documentclass[11pt]{article}
+%\begin{document}
+\section{\bf I\rm nput \bf O\rm utput(IO) Server}
+\hrulefill
+\\ 
+The IOServer acts as the software's interface to the outside world. While it is true
+that the software has been designed to run autonomously, a need was stated early in 
+the project to allow the observation and alteration of virtually every aspect of the
+software during pre and mid experiment. Physically, the communication between the
+ground support hardware and the flight computer is achieved through a set of telemetry
+links, one uplink and one downlink. The uplink operates at 1200 baud and the downlink
+operates at 9600 baud. Requests and responses are transmitted in integrity validated
+packets. Once the input packets are read in through a serial port into the IOServer,
+they are deciphered and then the IOServer is responsible for querying and commanding
+the other programs. There are also several tasks that the IOServer is solely responsible
+for. These include providing a virtual shell that functions similar to a standard unix
+shell, and providing streaming house-keeping information from the computer. The entirety 
+of the IOServers responsibilities is implemented using four threads. Each of these threads
+will be explained in the following section.
+ 
+\subsection{Internal Structure}
+
+The IOServer program is divided into four threads. These include the main thread, which
+initializes the variables and threads and also responds to input packets, the shell output thread,
+which listens for output from the virtual shell and sends it down the downlink as it arrives, the 
+vtmudeck input thread, which listens for message from the vtmudeck indicating the arrival of different
+timers, uplinks, and signals, and finally the streaming house-keeping thread which sends streaming
+data about onboard voltages and temperatures down the downlink. Each of these threads will be discussed
+in detail in the following sections.
+
+\subsubsection{Main Thread}
+
+The main thread contains the bulk of the IOServer code. This is because it not only handles the 
+initialization of the variables and threads, but it is also responsible for reading in packets
+and then responding the requests therein. This culminates in a large loop that contains an equally
+large number of If statements. \\
+\\
+Initialization of the majority of the variables and threads should be self explanatory when looking
+at the code. The important bits include the MIOPipe and PowerPipe as well as the VSHell objects. The
+MIOPipe and PowerPipe do what one would expect, they provide a convenient interface for communicating
+with both the MDAQ program and the PowerServer program. It is recommended that the source for these
+classes be consulted to understand how they function. The VShell object is a virtual shell that allows
+commands to be executed as if they were typed in a unix shell. This class will be described in detail later.
+The important piece to understand now is the meaning of the parameter passed to the constructor, in this
+case "/dev/SOUTPIPE". This string specifies the destination to which the shell's output will be sent. 
+This program uses /dev/SOUTPIPE which is a fifo. By doing this, the fifo can be read later and the output
+can be extracted.\\
+\\
+Next, the main thread enters the main loop and it waits to receive the first packet. Packets encapsulate
+requests and responses and are read and written with Input and Output Packetstreams. Each of these classes
+is described in detail later. The packets read by the flight computer can have one of four types. These 
+types include SHELL which contains a command to be executed in the virtual shell, MDAQ\_RQS which is a request
+for some action by the MDAQ program, PWR which is either a request to turn on or off a powersystem or is a
+query to request the status of a powersystem, or finally it can be of type HK\_RQS which is a request for a
+particular house-keeping value. Each of these types in turn contain a number of possible subtypes. These subtypes
+are to numerous to list here, so it is recommended that the source as well as \bf H \rm ouse Keeping \bf L \rm ink
+\bf P \rm rotocol(HLP) documentation be consulted to find out about specific options and their use. \\
+\\
+The main program also checks for the validity of the packets. It is possible that the packets could become corrupted
+during transmission. Therefore, parity checking ensures that the integrity of a packet is known. Upon receipt of 
+good packets, Good Acknowledgements are sent. Likewise, upon receipt of bad packets, Bad Acknowledgements are sent.\\
+\\
+When the main thread exits its main loop, it waits for the other threads to end before ending the program.
+
+\subsubsection{Shell Output Thread}
+
+The shell output thread is fairly simple. Just as the name implies, this thread waits for output from the 
+virtual shell to become available and then sends it in shell packets down the downlink. In this program the
+output from the shell is sent to /dev/SOUTPIPE, so this thread opens /dev/SOUTPIPE and continuously reads
+it. Because packet data can have a maximum length of 255 bytes, it is possible for a shell command to 
+produce more data than can fit into one packet. In this case, multiple shell output packets are sent
+down the downlink.
+
+\subsubsection{VTMUDeck Input Thread}
+
+The VTMUDeck Input Thread listens for input from the VTMUDeck indicating the arrival of a Timer,
+Uplink, or Shutter signal. Communication with the VTMUDeck is accomplished with an IOSPipe object.
+This class is similar to the MIOPipe and PowerPipe classes, and as such, the source should be
+consulted to see how these classes are used.\\
+\\
+After a message has been read indicating that a Timer, Uplink, or Shutter signal has been received,
+the vtmudeck input thread's only required action is to format a message with the relevant information
+and send it down the downlink to ground support.
+
+\subsubsection{Streaming HouseKeeping Thread}
+
+The streaming housekeeping thread uses the LMSensors Project's sensors library to read voltage
+and temperature information from the motherboard. Using their library involves opening a config
+file and using it to initialize their library. After this, a sensors\_chip\_name structure can
+be passed to the sensors\_get\_feature() function to extract information from the appropriate
+chip. On the Hercules EBX motherboard, this chip is the via686a. Relevant information includes
+a 2.0V reading, 2.5V reading, 3.3V reading, 5V reading, 12V reading, and several temperature readings.\\
+\\
+These values are extracted once every two seconds and sent down the downlink.
+\subsection{Helper Classes}
+
+Several Helper classes are utilized to give the IOServer its full functionality. These classes include the
+Packet class, InputPacketStream class, OutputPacketStream class, and the VShell class. Each of these classes
+will be described in detail in the following sections.
+
+\subsubsection{Packet}
+
+The Packet class is used to encapsulate the transmission packet. Data, which is almost always in the form or 
+requests or responses, is sent between the flight computer and ground support in discrete packets. Each packet 
+contains a type field, subtype field, data length field, data field, timestamp field, and parity byte. These 
+fields are capped
+with start and stop characters, parity encoded, and sent as a byte stream across the up and down links. With the
+Packet class, each of these processes is taken care of automatically. A packet can be created by passing it the
+necessary information and then sent down an output stream using the sendPacket() method. On the other end of
+the physical link, the packet can be read from an input stream using the readPacket() method. This method also
+automatically calculates the packets parity byte and then checks this against the parity byte transmitted to 
+check for packet integrity. It is recommended that the source be consulted to find the exact syntax of the
+other accessor and mutator methods. It is also recommended that the HLP documentation be consulted to learn
+about the specifics of the HLP Packet specification.
+
+\subsubsection{InputPacketStream \& OutputPacketStream}
+
+The InputPacketStream and OutputPacketStream classes are merely wrapper classes that are designed to 
+increase the ease of using packets. After the object has been created using the correct stream
+object, packets can be read and written by simply calling readPacket() or writePacket().
+
+\subsubsection{\bf V\rm irtual(V) Shell}
+
+The VShell class is used to provide access to a unix shell. In this case, the shell is actually a 
+slightly restricted bash shell. The VShell class achieves this by creating a new bash process. This
+process has its standard input, standard output, and standard error streams redirected in such a 
+way that it can be controlled by this shell.\\
+\\
+A VShell object is created by passing a device or file where the output should be sent. This is usually a
+pipe that can be read from a program. After the object has been created, commands are executing by passing
+them to the execute() method. For example vshell.execute("ls") would list all of the files in the current
+directory. When the VShell is finished being used, the shell should be closed by using the exit() method.\\
+\\
+As previously mentioned, this is a somewhat restricted bash shell. Although it should behave very similarly to
+a regular bash shell, because it is one, the nature of the shell's creation dictates job control may be unavailable.
+It is recommended that the software be thoroughly tested with a wide range of scenarios to determine what is 
+possible and what isn't.
+
+
+%\end{document}
+

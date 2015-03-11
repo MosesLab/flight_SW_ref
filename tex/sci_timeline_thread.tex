@@ -1,0 +1,46 @@
+%\documentclass[11pt]{article}
+%\begin{document}
+\section{Science Timeline Thread}
+\hrulefill
+\\
+Sci ti Thread...
+As the name implies. the science timeline thread controls the overall timeline of the experiment. Science timeline starts off by ensuring that the ROE is active, otherwise the taking exposures would be pointless. Like all of the threads, science timeline is initialized at startup, but waits on a signal, SIGUSR1 in order to continue. Once the signal has been received, the thread will set the current sequence from the already initialized sequence map and begin taking exposures. The takeExposure function starts off by flushing the ROE CCDs 5 times in order to remove any accumulated charge on the CCDs .It then opens the shutter and then uses a sleep function to wait for the designated exposure time(we will have to do some timing experiments to determine if sleep will be accurate enough). If the exposure is a data sequence, then additional time will be added to the exposure length, as represented by the variable PULSE in sciencetimeline.h. This additional time is used to account for the difference in the time it takes to open and close the shutter. 
+Once the exposure is taken, meta data of the image will be saved to the image struct, and sent over telemetry. After that, the thread commands the ROE to read out its exposure data. This process will take four seconds, and this thread can sleep during that time. The last task for the science timeline thread to complete is to enqueue the image to the image writer thread so the image writer thread can independently start writing data to the SD card while the science timeline thread moves to the next exposure. 
+This process is repeated for each exposure in the specified sequence.
+
+\subsection{Read Out Electronics (ROE)}
+
+The ROE is capable of being in several different modes. Those different modes are:
+
+\textbf{Default Mode:}
+This is the mode that the ROE is initially in on startup. In default mode, only one command can be sent to it, which is the exitDefault() command. While in default mode, all the ROE does is simply readout an exposure every twelve seconds.
+
+\textbf{Command Mode:}
+This is the mode that the ROE is in after the exitDefault() command has been sent. The ROE will be in command mode for the majority of the flight. In this mode, commands can be sent such as setting the ROE to a new mode, reading out the CCDs or requesting Housekeeping values. 
+
+\textbf{Selftest Mode:}
+In selftest mode, the ROE will not read out the CCD’s at all, but will instead read out a predefined sequenceof vertical bars. This can be useful for testing the flight computers data acquisition abilities. Once the ROE is in selftest mode, it must be reset via the reset() method in order to exit selftest mode. One would also need to exit default mode again after the reset.
+
+\textbf{Stims Mode:}
+In stims mode,  a predefined pattern is generated in much the same way as the selftest pattern. The difference is that in stims mode the pattern is fed through the CCD readout circuits and thus any extraneous noise and other anomalies show up in the pattern. Also, unlike selftest mode, stims mode can be exited by using the stimOff() method.
+
+\textbf{Nominal Operation}
+
+The ReadOutElectronics object is instructed to exit default mode, reset, and then exit default mode again. The cause for this seeming redundancy is that commanding the ROE to exit default mode while in command mode has no effect. However, commanding the ROE to reset while it is in default mode causes a software error. Therefore, we exit default mode once to make sure that the ROE is commandable, tell it to reset so that we know what configuration it is in, and then finally exit default mode again to make it commandable in a known configuration. The default port for the ROE is /dev/ttyS1 (COM2).
+The main job of the ROE is to read out the data on the CCD cameras. The two main functions required to acheive this are the flush() and readout() functions. Flush is used to clear any accumulated data on the cameras and readOut is used to get the data from the cameras. The biggest difference between the two, is that flushing the ROE is faster and doesn’t send any data down the data link. It is recommended that the ROE be flushed five times in succession before every exposure. Readout does just what one would expect, it reads out the cameras. It is suggested that the ROE be allowed four seconds for reading out data between exposures. The only notable point of confusion for this method is that it also requires a block id, which is basically just a byte that defines how the ROE needs to be read out. There are unique id’s for reading out the ROE normally, reading out while in selftest mode, reading out while in stims mode, and there are even some undocumented id’s which were used for testing during the construction of the ROE. All of these block id’s are documented in the roe.h file.
+
+As a last point of interest, there are also methods for getting and setting the analogue electronics parameters inside the ROE. These methods normally go unused and
+are usually only useful during testing. These parameters consist of 8 bytes which control
+the ROE’s behavior. In fact, it is by setting these values that the ROE is placed into
+selftest and stims mode. In those methods these parameters are written automatically.
+It is suggested that these parameters only be changed if an experienced ROE operator
+/technician knows what they are doing.
+
+
+In regards to the Housekeeping data of the ROE, the values that are returned are the raw hex values. These raw hex values are then passed on from the flight software to the ground station. The ground station then displays these raw values, unconverted.
+
+Mutex locks have been implemented in the ROE functions since multiple threads could potentially be trying to access it at the same time. An example of this could be that the Science timeline thread could be telling the ROE to flush the CCD’s, while a packet sent from the GSE could be requesting HK values. Although the likelihood of this clashing of threads causing errors in small, it is important to make sure that the signals being sent to the ROE are exactly what we intended them to be.
+
+
+
+

@@ -1,0 +1,63 @@
+%\documentclass[11pt]{article}
+%\begin{document}
+
+\section{Appendix A - Digital I/O Pinouts}
+
+\begin{tabular}{|c|c|r|r|c|c|}\hline
+\multicolumn{6}{|c|}{\bf DIO Bank Pinouts}\\ \hline
+\it Bank &\it Pin &\it Purpose &\it Used By &\it Input &\it Output \\ \hline\hline
+
+         & 0      & Data Start Timer &      &          & \\ \cline{2 - 3}
+         & 1      & Data Stop Timer  &      &          & \\ \cline{2 - 3}
+	 & 2      & Dark 2    Timer  &      &          & \\ \cline{2 - 3}
+ A	 & 3      & Dark 4    Timer  & VTMUDeck & X    & \\ \cline{2 - 3}
+         & 4      & Sleep     Timer  &      &          & \\ \cline{2 - 3}
+         & 5      & Data Start Uplink &     &          & \\ \cline{2 - 3}
+	 & 6      & Data Stop Uplink &      &          & \\ \cline{2 - 3}
+	 & 7      & Dark 1 Uplink    &      &          & \\ \hline
+
+	 & 0	  & Dark 2 Uplink    &      &          & \\ \cline{2 - 3}
+	 & 1      & Dark 3 Uplink    &      &          & \\ \cline{2 - 3}
+	 & 2      & Dark 4 Uplink    &      &          & \\ \cline{2 - 3}
+ B	 & 3      & Sleep  Uplink    & VTMUDeck & X    & \\ \cline{2 - 3}
+         & 4      & Wake   Uplink    &      &          & \\ \cline{2 - 3}
+         & 5      & Test   Uplink    &      &          & \\ \cline{2 - 3}
+         & 6      & Shutter Signal   &      &          & \\ \cline{2 - 4}
+         & 7      & Unassigned       &  N/A &          & \\ \hline
+
+         & 0      &                  &      &          & \\ \cline{2 - 2}
+	 & 1      &                  &      &          & \\ \cline{2 - 2}
+	 & 2      & Dynamically      &      &          & \\ \cline{2 - 2}
+ C	 & 3      & Assigned In      & PowerServer &   & X \\ \cline{2 - 2}
+         & 4      & powersys.conf    &      &          & \\ \cline{2 - 2}
+         & 5      &                  &      &          & \\ \cline{2 - 2}
+	 & 6      &                  &      &          & \\ \cline{2 - 2}
+	 & 7      &                  &      &          & \\ \hline
+           
+	 & 0      &                  &      &          & \\ \cline{2 - 2}
+	 & 1      &                  &      &          & \\ \cline{2 - 2}
+	 & 2      & Dynamically      &      &          & \\ \cline{2 - 2}
+ D	 & 3      & Assigned In      & PowerServer &   & X \\ \cline{2 - 2}
+	 & 4      & powersys.conf    &      &          & \\ \cline{2 - 2}
+	 & 5      &                  &      &          & \\ \cline{2 - 2}
+	 & 6      &                  &      &          & \\ \cline{2 - 2}
+	 & 7      &                  &      &          & \\ \hline
+\end{tabular}
+\pagebreak
+
+\begin{tabular}{|c|c|r|r|c|c|}\hline
+\multicolumn{6}{|c|}{\bf DIO Bank Pinouts}\\ \hline
+\it Bank &\it Pin &\it Purpose &\it Used By &\it Input &\it Output \\ \hline\hline
+
+	 & 0      &            &            &          & \\ \cline{2 - 2}
+	 & 1      &            &            &          & \\ \cline{2 - 2}
+	 & 2      & Unassigned & N/A        &          & \\ \cline{2 - 2}
+ E	 & 3      &            &            &          & X \\ \cline{2 - 2}
+	 & 4      &            &            &          & \\ \cline{2 - 4}
+	 & 5      & Clear Virtual Fifo&     &          & \\ \cline{2 - 3}
+	 & 6      & Open Shutter &  MDAQ    &          & \\ \cline{2 - 3}
+	 & 7      & Close Shutter &         &          & \\ \hline
+
+\end{tabular}
+
+%\end{document}

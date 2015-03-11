@@ -1,0 +1,16 @@
+%\documentclass[11pt]{article}
+%\begin{document}
+\section{Image Writer Thread}
+\hrulefill
+\\
+Image Writer Thread...
+
+Through time testing, it was determined that it takes approximately one second to write each ROE image to disc. Since this mission is very time critical, it was determined that this time was too long to leave as a serial process in the science timeline thread. The result of moving this process of writing images to another thread will result in a large percentage of flight time saved, allowing more exposures captured during the flight.
+
+A ROE image struct is used to store all the image data and meta data for each image that is read out. Here is a brief overview of the image struct:
+Values for the origin, instrument, observer, and object typically will not change each flight. However, if this software was used under different circumstances, these values could be changed to reflect that. Bitpix, the bits per pixel value, along with the width and height, are set……. Channels consists of a single character value that can be anded and ored with channel define values to enable the desired channels. Other values unique to each image include the filename, its actual name, the date and time the exposure started, its duration, the size in pixels of each channel, the name of the sequence the exposure is in, as well as the number of exposures in that sequence.  
+
+The image writer thread starts by assigning data to the image struct inside the write\_data function. Once all of these values are assigned, it goes to write the file. This is broken down into two tasks, writing the actual image data to disk, and writing the xml file to disc. The xml file contains all of the metadata. 
+
+
+Once the file is written to disc, a pointer to that image is placed into the telemetry queue, where it the telemtry thread performs the task of sending that data to the ground. With this being the last thing the image writer thread needs to do with the local data, it frees it to make room for the next image. 

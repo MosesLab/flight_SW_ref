@@ -1,0 +1,12 @@
+%\documentclass[11pt]{article}
+%\begin{document}
+\section{Main Subsystems}
+\hrulefill
+\\
+Main Subsystems...
+	\begin{enumerate}
+		\item VDX104+
+		\item CTI FreeForm PCI-104 Virtex 5 FPGA
+		\item Data Stop
+		\item Sleep
+	\end{enumerate}

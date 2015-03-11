@@ -1,0 +1,8 @@
+%\documentclass[11pt]{article}
+%\begin{document}
+\section{\bf Architecture Description }
+\hrulefill
+\\
+The MOSES instrument needs to be able to respond to IO on several different interfaces. This is problematic in sequential programming, as input could be lost while the computer is in a another part of the program or output could be lost while the software is waiting for something else. This issue is alleviated by using a threaded software architecture, which can execute separate subprograms concurrently. Linux provides excellent libraries for threaded programming, known as POSIX threads (pthreads). Pthreads allows the flight software to execute the science timeline, while still being available to respond for input or write data to the hard-disk drive. 
+The challenge with this threaded architecture is one of synchronization. Each thread operates independently, and steps must be taken to ensure that the program executes in the proper order and no memory is accessed simultaneously by two or more threads. In the MSFW thread synchronization is accomplished through so-called lockingQueues. lockingQueues are like a normal queue data structure, except that they take advantage of mutex locks to “lock” the queue until the accessing thread has completed its operation on the queue. LockingQueues are implemented anywhere in the program where it is necessary to pass data in between threads.
+Another thread synchronization technique utilized in the MFSW is signals. Signals are objects provided by the Linux OS that allow separate threads or processes to get each others attention through a binary flag. In the MFSW, signals are used to instruct the main process to shut down the flight software.

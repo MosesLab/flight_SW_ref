@@ -1,0 +1,53 @@
+%\documentclass[11pt]{article}
+%\begin{document}
+\section{Power Server}
+\hrulefill
+\\ 
+The PowerServer is responsible for turning on and off power to subsystems as well as keeping
+track of the current power configuration. Changes and queries can be made during the experiment 
+by communicating with the PowerServer through the PowerPipe class. This class uses a system FIFO
+to send commands to the PowerServer. The PowerServer can also be used in conjunction with the 
+startpower script and the powersys.conf configuration file to power on any necessary systems in
+a predefined order at startup. These options will be covered later.
+
+\subsection{Internal Structure}
+
+Internally, the PowerServer is a continuous loop which reads command from a PowerPipe object and
+uses a PowerSystem object to fulfill the commands. The PowerSystem class is merely a PowerServer
+oriented wrapper around the DIOBoard class. So when you tell it to turn on a subsystem, you are
+really just telling it to assert a DIO pin. The PowerSystem class uses DIO ports C and D.\\ 
+\newline
+There are four different types of commands. There are \it Up \rm commands that tell the PowerServer
+to power up a system, \it Down \rm commands that tell the PowerServer to power down a system,
+\it Query \rm commands which ask for the status of a system, and there is also an \it Exit \rm 
+command. When the commands come out of the PowerPipe, they are in the form of a three character string.
+The first character is either 'U' for up, 'D' for down, 'Q' for query, or 'E' for exit. The remaining 
+characters are either "XT" in the case of the exit command, or they are numbers specifying the pin / system
+that is of interest. For the \it Up \rm and \it Down \rm commands, the remaining characters can also be
+"AL" specifying that all systems should be either powered up or down.
+
+\subsection{Automatic Powerup at Startup}
+
+As mentioned earlier, the startpower script can be used in conjunction with the powersys.conf configuration
+file to automatically power up any desired systems at computer boot time. The script can either interactively
+prompt the user for every system included in powersys.conf or it can be made to automatically start all systems
+through the use of the -a flag. The powersys.conf file uses a very simple structure. Each subsystem must have a
+name and number. The number is basically the system's DIO pin number. The name is only used for display purposes
+in order to let the user know what is happening. The name and number must be separated by an equals sign and the
+whole line needs to end with a colon. The systems are started in the order in which they appear in the file\\
+\newline
+As an example, Lets assume that we have device1, device2, and device3. They need to be started in that order and
+they have been assigned DIO pins 5, 6, and 7 respectively. The powersys.conf file would look as follows:
+\begin{verbatim}
+  #powersys.conf
+
+  device1=05:
+  device2=06:
+  device3=07:
+
+\end{verbatim}
+These devices will be powered up at startup if the 'startpower -a' script is run after the PowerServer
+has been started.
+
+%\end{document}
+

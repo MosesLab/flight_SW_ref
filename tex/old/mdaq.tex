@@ -1,0 +1,380 @@
+%\documentclass[11pt]{article}
+%\begin{document}
+\section{\bf M\rm ission \bf D\rm ata \bf A\rm c\bf Q\rm uisition(MDAQ) }
+\hrulefill
+\\ 
+The Mission Data Acquisition or MDAQ program is probably the most essential
+piece of software in the entire MOSES collection. It is responsible for 
+orchestrating the part of the experiment that collects actual science data.
+This involves multiple steps, first there must be a predefined exposure sequence
+that dictates the number of exposures and the durations of each individual exposure
+in the sequence. When an exposure sequence is initiated, the MDAQ program must operate
+the shutter correctly, command the Read Out Electronics(ROE) to read out the images
+on the CCD cameras, acquire the data with a sustained rate of 4MB/s, and finally it needs
+to both write the data to disk in an acceptable format and send as much data as it can 
+down the high-speed data telemetry link. Besides this main task, the program must also be
+able to communicate with the IOServer and alter its behavior according to any such requests
+received.
+This process requires the combined efforts of 
+many individual pieces. The rest of this section will focus on these pieces and how they
+work together.
+
+\subsection{Internal Structure}
+
+The MDAQ program can logically be divided into 4 different sections. In general, these sections
+correspond with the different threads, however one section is actually composed of five threads
+with each doing virtually the same thing. These sections include the main thread, which initializes
+all of the variables, starts the threads, and then waits for the threads to finish, the telemetry 
+thread, which streams science down down the telemetry link as it becomes available after acquisition,
+the interactive I/O thread, which allows interprocess communication between the MDAQ program and the
+other pieces of software, and finally the fourth section is the data capture section, which executes
+exposure sequences, acquires data, and write the data to the disk. Due to some clashes between system
+signals and threads, each signal must have its own thread that waits for the signal to appear and then
+starts the data acquisition process. Therefore, all five signal threads get lumped into one section
+from a logical standpoint. An in-depth discussion on each of these sections will follow.
+
+\subsubsection{Main Thread}
+
+As previously mentioned, the main thread is mostly responsible for initializing variables, starting all
+of the threads and then waiting for the threads to finish. This is no doubt one of the simplest sections,
+but it still performs several critical tasks. To begin with, there are several attributes and settings 
+that can be specified by a user before beginning the program. These settings are stored in a file, usually 
+mdaq.conf, and they must be extracted and parsed at the beginning of the program. This process is facilitated
+through the use of an InitAttr object. A discussion of the InitAttr class will be postponed until later in this
+document. At this point it will suffice to understand that these attributes are retrieved at this point in the
+code. Arguably the most important piece of information that is retrieved in this way is a set of sequence file names.
+These file names define which sequence file is associated with any given signal. This is particularly useful,
+because it
+means that a user can have any number of possible sequences stored in separate files and can specify in the mdaq.conf file which sequences to use just before a run. 
+\\\\
+Next, Sequence objects are created by passing the sequence filenames as arguments 
+to the Sequence constructor. It is useful to encapsulate sequence information in an
+object because it makes performing operations on the sequence very convenient. They
+can also keep track of the current position in a sequence while it is being executed.
+All of these features are discussed in detail later. At the same time that the Sequence
+objects are being created, they are also being associated with a signal number through
+the use of an associative array. After this point, it becomes trivial to determine which
+sequence to execute after receiving a signal.
+\\\\
+The Main thread also uses this initial setup time to ensure that the Read Out Electronics(ROE) is
+ready to take images in a desired manner. It does so through use of a ReadOutElectronics object,
+covered later. The ReadOutElectronics object is instructed to exit default mode, reset, and then 
+exit default mode
+again. The cause for this seeming redundancy is that commanding the ROE to exit default mode while in 
+command mode has no effect. However, commanding the ROE to reset while it is in default mode causes a 
+software error. Therefore, we exit default mode once to make sure that the ROE is commandable, tell it to reset
+so that we know what configuration it is in, and then finally exit default mode again to make it commandable
+in a known configuration.
+\\\\
+MDAQ then configures the program for the proper use of signals and starts all of the threads. At this point
+the main thread has nothing more to do, so it waits for an exit signal. Upon receipt of this signal, the
+other threads are instructed to finish, killed if necessary, and resources are destroyed and given back to the
+system. This concludes the duties given to the main thread.
+
+\subsubsection{Telemetry Thread}
+
+Telemetry in MDAQ simply involves sending acquired data(images) out of the telemetry 
+port as they become available. Unfortunately, this process isn't as easy as writing 
+the data to disk. The reason behind this, is that the telemetry link operates at a 
+much slower data rate than the storage disk or data acquisition hardware. In fact, it
+is going to be impossible to send all of the data that we receive down the telemetry
+link. Therefore, the telemetry process is merely concerned with the sustained transmission 
+of as much data as possible.\\
+\\
+The driver design of the telemetry card makes writing to the telemetry port virtually as 
+simple as opening and writing to a file. The telemetry port is specified as /dev/sfc0.
+Accordingly this file/device is opened for writing at the beginning of this thread. The
+only non file-like operation that is performed is an ioctl to the device that flushes the
+transmission buffer. From this point on, the user should be able to treat this device as
+a file, in theory.\\
+\\
+Filenames of files that need to be written to the telemetry port are obtained in the
+telemetry thread from a queue of file names. These file names are written to the queue 
+in a data acquisition thread after the files have been written to disk. In essence,
+the telemetry thread is basically a big loop that waits for the queue to become not
+empty and then systematically opens and writes the files to the port until the queue
+becomes empty again. In the actual experiment, it is very likely that the queue will
+remain empty during the beginning of the experiment, but remain populated once it 
+begins to receive file names. When this loop is instructed to terminate by the main 
+thread, it expunges the names of any untransmitted files from the queue.\\
+\\
+As a final note on the telemetry thread, it also formats the data in such a way that
+on the other end, an observer can tell where one file ends and another begins. This 
+is accomplished by adding a header and footer to every file. The header and footer
+contain bitpatterns that are extremely unlikely if not impossible to appear in actual
+data. The code should be consulted to learn the actual bitpatterns used.
+
+\subsubsection{Interactive I/O Thread}
+
+Communication with the MDAQ program from the outside world is accomplished through the
+interactive I/O thread. This thread serves as an interface for querying and altering
+the behavior of the MDAQ program while it is running. Commands to the MDAQ program
+are acquired through the use of an MIOPipe object, which utilizes a system FIFO to
+facilitate interprocess communication. It is recommended that other programs whishing
+to communicate with the MDAQ program use the MIOPipe class to ensure convenience and
+compatibility.\\
+\\
+At this point all of the different interactive I/O options will be listed, but it is
+highly recommended that the MIOPipe class be used / consulted to understand how these
+options are used:
+\begin{list}{}{}
+\item Set the sequence name associated with a signal
+\item Set the output name used as a stub for file names
+\item Get the Process ID for a signal / thread
+\item Get the sequence name associated with a signal
+\item Get the sequence information(exposure durations) for a signal
+\item Get the output name used for stubs
+\item Get the name of the currently executing sequence, if any
+\item Get the length of the current exposure
+\item Get the index of the current exposure in its exposure sequence
+\item Get the status(on/off) of selftest mode
+\item Get the status(on/off) of stims mode
+\item Get the status(on/off) of telemetry output
+\item Get the status(on/off) of producing channel 0 data
+\item Get the status(on/off) of producing only positive channel data
+\item Scale the current sequence by a specified ratio
+\item Translate the current sequence by a specified delta value
+\item Find and replace all occurrences of one exposure duration with another for the current sequence
+\item Jump to a specified index in the current sequence
+\item Save the current sequence configuration to a specified file
+\item Find an exposure duration in the current sequence and jump to it
+\item Begin / Resume the current sequence
+\item Pause / Stop(if received twice) the current sequence
+\item Stop the current exposure immediately.
+\item Turn telemetry output on/off
+\item Turn Channel 0 data production on/off
+\item Turn Positive channel only data production on/off
+\item Open the Shutter
+\item Close the Shutter
+\item Get the value of an ROE House Keeping parameter
+\item Reset the ROE
+\item Command the ROE to exit default mode
+\item Command the ROE to enter selftest mode
+\item Command the ROE to enter/exit stims mode
+\item Get the Analogue Electronics parameters for the ROE
+\item Set the Analogue Electronics parameters for the ROE
+\end{list}
+Again, to see how these options are used and implemented, it is recommended that
+the MIOPipe and MDAQ source be consulted.
+
+\subsubsection{Data Acquisition}
+Each signal has its own thread which waits for the signal to arrive. Once the signal arrives,
+the capture\_data function is called and this starts the data acquisition process. Inside the
+capture\_data function, the process begins by loading the correct sequence. This is accomplished
+by setting the current\_sequence pointer to point to the sequence associated with the received
+signal number. Next, the function enters a for-loop that steps through the exposure sequence
+using the Sequence.getNextExposure() method and performing Sequence.getExposureCount() iterations.\\
+\\
+Data Acquisition inside the for-loop involves several steps. First the shutter must be opened and closed,
+remaining open for the desired exposure length. This is accomplished with the takeExposure() function.
+The actual signals to the shutter are generated by a DIOBoard object, and the timing is achieved with
+the gettimeofday() system call. \\
+\\
+Next, a DmaDaq object is told to expect data and the ReadOutElectronics
+object is told to read out the data. At this point the ROE should be streaming data to the FPGA, which
+will in turn be using Direct Memory Access(DMA) to place the data into main memory. Because DMA does not
+require the use of the processor, the DmaDaq object is able to simultaneously sort the previous data as
+new data is coming in. The data needs to be sorted because the data from all four channels is interlaced
+as it comes down the stream. Thus it is necessary to place all of the channel zero data into its own
+buffer and so on. After the call to DmaDaq.finishAndSort() has completed, the program should be left with
+four buffers full of data. \\
+\\
+The final step is to write the acquired data to disk. This is easily accomplished with a call to write\_data().
+Calling write\_data() requires the program to send in a pointer to an array of four buffers with data, a pointer
+to an array of four ints representing the sizes, in pixels, of the four channels, and a Data\_Frame\_Info structure
+that contains relevant information about the exposure and sequence. Inside the write\_data() function, an instance
+of the RoeImage class is created to automate the both the formatting and writing of the data. This function also 
+adds the new filename to the telemetry queue so that it can be transmitted if time allows. Both the DmaDaq and RoeImage
+classes are described in future sections.\\
+\\
+This process occurs for every exposure. After the last exposure has been taken, the thread exits the capture\_data
+function and once again begins listening for the appropriate signal to arrive.
+
+\subsection{Helper Classes}
+
+A number of non-standard helper classes are utilized to make the MDAQ program easier
+to write, easier to understand, and easier to maintain. Each of these classes are
+described in the following subsections.
+  
+\subsubsection{InitAttr}
+
+The InitAttr class provides a convenient way to extract attribute information from
+a file. Specifically, it extracts space delimited key-value pairs, where the key
+always appears first. As the file is parsed in the constructor, the pairs are stored
+in an associative array, so that the key can be easily used to fetch the value. \\
+\\
+If the type of data is for a key is already known, the InitAttr class also has methods
+that automatically cast and convert the ascii value to the desired type. The following is
+an example of what a file might look like followed by a typical program that might use the 
+InitAttr class with this file.
+
+\begin{verbatim}
+**********************************
+  #attr.conf
+
+  val1 10
+  val2 2.5
+
+  printVals true
+
+**********************************
+ //initReader.cpp
+ #include"initattr.h"
+ ...
+ InitAttr attr("attr.conf");
+
+ int v1 = attr.getIntParam("val1");
+ double v2 = attr.getDoubleParam("val2");
+
+ if(attr.getBoolParam("printVals") == true)
+     out << "v1 * v2 =" << (double(v1) * v2) <<endl;
+
+**********************************
+\end{verbatim} 
+Output:
+\begin{verbatim}
+  v1 * v2 = 25.0
+
+**********************************
+\end{verbatim} 
+
+\subsubsection{Sequence}
+
+The Sequence class provides an object oriented representation of an exposure
+sequence. Sequences can either be created by passing exposure information to
+the constructor, or the sequence can be parsed from a file by passing a file
+name to the constructor. Sequence files end in .asq, which stands for ascii
+sequence. The structure of an asq file is relatively simple and an example
+will appear at the end of this section. For now, it will suffice to know that
+the file contains the name of the sequence, the exposure count, and a space delimited
+list of exposure durations.\\
+\\
+A Sequence object can keep track of the current position in an exposure sequence
+while the sequence is being executed. It also contains many methods for manipulating
+the sequence in different ways. The following is a list of possible sequence operations:
+\begin{list}{}{}
+\item Get the sequence name
+\item Get the file name
+\item Get the exposure count
+\item Get an exposure at a specified index
+\item Get the current exposure
+\item Get the next exposure
+\item Find out if there are more exposures left
+\item Get the current index
+\item Find and replace one exposure duration with another
+\item Scale all exposures by a specified ratio
+\item Translate all exposures by a specified delta
+\item Jump to a specified index
+\item Find an exposure and jump to it
+\item Save the sequence and any changes made to a specified file
+\end{list}
+Thus, the Sequence class makes working sequences very convenient. It is suggested
+that the source for the sequence class be consulted to determine specific method
+names and argument types. The following is an example of a sequence file:
+\begin{verbatim}
+  SEQUENCE:
+          NAME: datadefault
+          COUNT: 5
+          BEGIN:
+                  .5 1.0 2.0 1.0 .5
+          END:
+\end{verbatim}
+\subsubsection{ReadOutElectronics}
+The ReadOutElectronics class is meant to provide an easy and reliable way of 
+communicating with the ROE. Upon creation, it attempts to establish a connection
+with the ROE over a serial port that must be pointed to by /dev/roe. The ReadOutElectronics
+class takes care of configuring the serial port to ensure correct communication.\\
+\\
+To begin using the ROE directly after it has been powered up, it is necessary to use the
+ReadOutElectronics.exitDefault() method which takes the ROE out of its default mode, that being one
+which is not commandable and reads out an image every eight seconds, and puts it into
+command mode. \\
+\\
+In command mode, there are a number of different options that can be selected
+to alter the way the ROE behaves. This may come as a surprise, considering that the ROE's
+primary and virtually only job is to read out the data on the CCD cameras, but there are a number
+of different ways that this data can be read out. For instance, if the ROE is placed in selftest mode
+through the use of the selftestMode() method, the ROE will not read out the CCD's at all, but will
+instead read out a predefined sequence of vertical bars. This can be useful for testing the flight
+computers data acquisition abilities. Once the ROE is in selftest mode, it must be reset via the reset()
+method in order to exit selftest mode. One would also need to exit default mode again after the reset.\\
+\\
+Another useful tool is the ROE's Stims mode. This is another diagnostic tool for checking the correct
+functioning of the ROE. In this mode, a predefined pattern is generated in much the same way as the
+selftest pattern. The difference is that in stims mode the pattern is fed through the CCD readout circuits
+and thus any extraneous noise and other anomalies show up in the pattern. Also, unlike selftest mode, stims
+mode can be exited by using the stimOff() method.\\
+\\
+Yet another tool that is provided by the ReadOutElectronics class, is the ability to easily query the ROE
+for house-keeping data. The ROE has many voltages, currents, and temperatures that each have a unique H/K id
+number. When this id number is passed to the getHK() method, the raw value for the H/K parameter is returned.
+The types and id's for the ROE's H/K parameters are defined in the roehk.h file.\\
+\\
+This finally brings us to the bread and butter of the ROE, the flush() and readOut() methods. Flush is used to
+clear any accumulated data on the cameras and readOut is used to get the data from the cameras. The biggest difference
+between the two, is that flushing the ROE is faster and doesn't send any data down the data link. It is recommended that
+the ROE be flushed five times in succession before every exposure. Readout does just what one would expect, it
+reads out the cameras. It is suggested that the ROE be allowed four seconds for reading out data between exposures.
+The only notable point of confusion for this method is that it also requires a block id, which is basically just
+a byte that defines how the ROE needs to be read out. There are unique id's for reading out the ROE normally, reading out
+while in selftest mode, reading out while in stims mode, and there are even some undocumented id's which were used for
+testing during the construction of the ROE. All of these block id's are documented in the roe.h file.\\
+\\
+As a last point of interest, there are also methods for getting and setting the analogue electronics parameters inside
+the ROE. These methods normally go unused and are usually only useful during testing. These parameters consist of 8
+bytes which control the ROE's behavior. In fact, it is by setting these values that the ROE is placed into selftest
+and stims mode. In those methods these parameters are written automatically. It is suggested that these parameters only
+be changed if an experienced ROE operator / technician knows what they are doing.
+
+\subsubsection{DmaDaq}
+The DmaDaq class is mostly just an object oriented wrapper around the FPGA API defined in pcifio.h. As such, the
+pcifio api provides in-depth coverage on most of the functions called in this class. The methods without procedural
+equivalents include the constructor, the finishAndSort() method, and the flush() method. These methods will be
+covered here.\\
+\\
+Most of the constructors activities involve initializing the pcifio board and fifo. After this initialization has
+completed, the constructor goes on to setup proper DMA operation. When the computer is booted up, the boot loader
+sets away a portion of memory towards the top for DMA. The constructor retrieves both a pointer to this memory, as
+well as a logical address that is passed to the DMA functions. The constructor takes parameters specifying the 
+buffer count and the buffer size. Basically, these values are used to partition the DMA buffer into several smaller
+sections. These smaller sections are then used in a see-saw manner. While one buffer is being filled up with data
+another is being readout. In the moses software, the number of buffers is set to 4. The size is set to be one fourth
+of the data coming in one exposure. The reason for this is slightly complicated. In the pcifio api, there is a maximum
+amount of data that can be read with one call to the card. This maximum value just happens to be equal to one fourth of
+our data. Therefore, the function must be called four times. We use four buffers, so that every call to the card can 
+have its own buffer and when the calls are finished the data lines up in one contiguous block.\\
+\\
+As previously mentioned, the read function must be called four times. Because the FPGA card needs to be listening for
+data before the ROE starts reading out, one of these calls is made, the ROE is commanded to readout, and then the other
+three calls must be made. These other three calls have been combined into the finishAndSort() method. The nice thing about
+this method is that it also sorts the data while new data is being acquired. As previously mentioned in this document, the
+data from the ROE comes from four different channels and is interleaved. The sorting that takes place in this method
+untangles these channels and stores the data from each channel into and array of four pixel buffers which is passed
+as a parameter. The method also updates and array of four index which is also passed as a parameter. When this method
+finishes, these four indexes can be used to tell the sizes in pixels of the four data buffers.\\
+\\
+The last method that needs to be covered is also the simplest. The flush() method simply reads and discards any extraneous
+data that is left in the physical fifo after previous read methods have read out the real data from the ROE. The 
+information left in the fifo is often the byproduct of certain workarounds that had to used in the FPGA design.
+
+\subsubsection{RoeImage}
+Images from the ROE are written to disk through the use of the RoeImage class. At first glance this class might seem
+unnecessary because the data from the ROE is saved in such a simple format. How Simple? Well to be honest, The first
+channel is written if it is present, followed by the second channel, third, and fourth. This format was chosen because
+software already existed for reading such a file into an image / data analysis software suite. The reason that we 
+can't just write the data to disk and be done with it is that there is a lot of important information about an
+image that shouldn't be lost. This is where the RoeImage class comes in. It implements an effective and efficient
+way of storing this information.\\
+\\
+Here is how it works. After the data portion of the image has been set, a number of other methods are used to set
+the relevant information. This information includes the name of the image( which is usually something like darktest1 ),
+setting the number of bits per pixel, setting the width and the height, setting the exposure duration, setting the 
+number of channels included, setting the date and time, and setting the origin, instrument, observer, and object for the
+image. It now becomes obvious that this is a lot of useful information. To store this information it is important that the
+image have a unique filename. This is easily achieved by using the date and time. The reason that the name needs to be 
+unique is that the RoeImage class saves all of the image information in a common XML file. The file name is used as the
+index into this file. This XML file can then be parsed by different software later or it can even be parsed by
+the RoeImage class to read an image and its information from disk.
+
+%\end{document}
+

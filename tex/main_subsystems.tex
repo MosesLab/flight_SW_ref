@@ -1,0 +1,15 @@
+%\documentclass[11pt]{article}
+%\begin{document}
+\section{Main Subsystems}
+\hrulefill
+\\
+Main Subsystems...
+	\begin{enumerate}
+		\item Tri-M VDX104+ : Main flight computer board. Contains the CPU, SD hard drive, RS-232 ports.
+		\item CTI FreeForm PCI-104 Virtex 5 FPGA: Connected to the VDX104+ through PCI bus. Main function is to capture science data produced by the ROE. Also implemented on the FPGA is all of the output/input GPIO lines required for operation.
+		\item Read-out Electronics (ROE):  The ROE is the interface between the FPGA and the CCDs that capture scientific data. Upon receiving a command from the flight computer to begin readout it will clock the data contained within the CCDS and stream it to the FPGA.
+		\item Power board: Board that manages the power systems on the instrument. The flight computer applies a high value to whichever power subsystems have been requested to be activated and then strobes a latch to turn on/off the subsystems.
+		\item Power board: Board that manages the power systems on the instrument. The flight computer applies a high value to whichever power subsystems have been requested to be activated and then strobes a latch to turn on/off the subsystems.
+		\item Telemetry transmitter: Science data is sent from the FC to a radio transmitter, which sends the data back to the ground at 10 Mbit/sec
+		\item Housekeeping link: Consists of two separate radio connections, hkup and hkdown. Hkup operates at 1200 baud and sends commands from the ground to the instrument. Hkdown operates at 9600 baud and sends replies from the instrument to the ground.
+	\end{enumerate}

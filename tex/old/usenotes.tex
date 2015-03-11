@@ -1,0 +1,24 @@
+
+\section{Appendix B - Notes on Software Usage}
+\hrulefill
+\\ 
+Compiling this software should be as easy as using the Makefiles in the
+respective directories. However, there are a number of libraries that must be
+present in order to compile the software. These include libdscud5.a, pcifio\_api.a,
+and libsensors.so. These libraries must also reside in the correct directories.
+The Makefiles should be consulted to assist in placing these libraries in the correct
+directories.\\
+\\
+After the moses\_install script is executed to ensure that all of the correct device files
+and directories have been created, the software can be started, most likely at startup. It is important
+to note that there is a sequence in which the programs should be started and tends to produce the 
+best results. In order these go:\\
+\\
+/moses/bin/vtmudeck \& \\
+/moses/bin/powerserver \& \\
+/moses/bin/mdaq \& \\
+/moses/bin/ioserver \& \\
+\\
+After this, communication with the system can be achieved through the IOServer.
+
+

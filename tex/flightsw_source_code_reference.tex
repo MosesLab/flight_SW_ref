@@ -1,0 +1,43 @@
+\documentclass[11pt,titlepage]{article}
+
+\usepackage{long table} % long tables
+
+\title{MOSES Flight Software \\ A Guide to the Source}
+\author{David Keltgen, Roy Smart, Jackson Remington}
+\date{\today}
+
+\setlength{\textwidth}{14.5cm}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section[Revisions]{Revision History}
+	\begin{longtable}{|c|c|r|r|}
+		\hline
+		Revision	&	Date	&	\multicolumn{1}{c|}{History}	&	\multicolumn{1}{c|}{Initial}\\
+		\hline
+		0.1	&	03-11-2015	&	Created	& DJK	\\
+		\hline
+
+	\end{longtable}
+	
+\newpage
+
+
+\include{intro}
+\include{main_subsystems}
+\include{specifications}
+\include{architecture}
+\include{main_thread}
+\include{sci_timeline_thread}
+\include{image_writer_thread}
+\include{gpio_thread}
+\include{fpga_server_thread}
+\include{hlp_threads}
+\include{telem_thread}
+\include{dictionary}
+\
+\end{document}

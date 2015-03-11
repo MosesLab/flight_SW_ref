@@ -1,0 +1,475 @@
+%tex document
+%Author: Reginald Mead
+%Moses Flight Computer
+
+\documentclass[11pt,titlepage]{article}
+\title{MOSES Flight Computer}
+\author{Reginald Mead}
+\date{24 April 2005}
+
+%Maybe these should be removed
+\oddsidemargin 0.0in
+\evensidemargin 0.0in
+\textwidth 6.5in
+\textheight 9.0in
+%\hoffset -0.25in
+\marginparwidth 0.0in
+\marginparsep 0.0in
+
+
+
+\begin{document}
+\maketitle
+
+\pagenumbering{roman}
+
+\begin{abstract}
+The Moses Flight Computer is a combination of hardware and software designed to operate the Multi Order Solar EUV Spectrograph being designed at
+Montana State University by Dr. Charles Kankelborg. This instrument will be flown as a rocket payload in July 2005 and as such, the Flight Computer
+must be designed and implemented accordingly. Designing and implementing hardware and software to meet the many requirements of this system is the 
+focus of this paper. The Flight Computer appears stable at this time and requirements fulfillment seems probable. This project is ongoing and much 
+progress has been made. It is currently on schedule for launch in July. The results so far are covered at the end of this paper and are accompanied 
+by an analysis when possible. A short discussion of the remaining tasks in this project concludes this paper.
+
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+
+
+\section{Introduction}
+\pagenumbering{arabic}
+
+In the study of the sun, the Multi Order Solar EUV Spectrograph promises to bring further insight into the inner workings of our local solar furnace. This
+complex experiment is tentatively scheduled to launch as part of a NASA rocket payload in July 2005. The operation of the experiment requires an intricate
+mesh of digital communication between subsystems. Therefore, a well designed, implemented, and tested Flight Computer is required to orchestrate the 
+correct operation of this instrument. The experiment will only have five minutes to take data, so it is imperative that the Flight Computer work flawlessly.
+The design and implementation of this system are the focus of the rest of this paper.
+
+
+\section{Background}
+
+\subsection{Multi Order Solar EUV Spectrograph}
+
+The Multi Order Solar EUV Spectrograph(MOSES) is an exciting new instrument being designed at
+Montana State University, under the direction of Dr. Charles Kankelborg. MOSES is a complex
+project that hopes to give solar physicists a new and powerful tool with which to study the sun.
+
+\subsubsection{Mission}
+
+Spectrographs are instruments that break light into its component wavelengths and record this information in some way. 
+This spectral information can be very useful because different wavelengths of light are produced by different elements or element ions.
+By observing the spectral information of the sun, we can get a glimpse into its inner workings. Even more information can be extracted by
+examining characteristics of the different wavelengths. Subtle differences can reveal information about the light source including velocity,
+temperature and density, just to name a few. 
+
+
+Spectrographs vary in design from model to model. One of the most common types of spectrograph is the slit spectrograph. In this model, a slit 
+of light enters the spectrograph and diffracts into its component wavelengths. The received image can be graphed with a y-axis and a lambda-axis.
+This type of spectrograph is probably the easiest to build, but it has an obvious flaw; an image can only be recorded one slit at a time. This 
+makes capturing a full image very time consuming. In the case of the sun, the instrument must actually be swept across the disk of the sun. Further
+complications are introduced by the inherently dynamic nature of the sun. The sun is naturally turbulent, much of which adds to its mystique. Physicists
+naturally desire a full spectral image of the sun with data obtained from a single moment in time. This is impossible with a slit spectrograph. The 
+nature of the instrument causes one side of the image to contain data from an early point in time than data found at the opposite side of the image.
+The current solution comes in the form of the slitless spectrograph.
+
+The slitless spectrograph works in much the same way as the slit-spectrograph. The obvious difference being that the slitless spectrograph has no slit 
+and as such allows an entire image of the sun to enter the spectrograph. This image is then routed through a diffraction grating or reflected off of a 
+special diffracting mirror. An entire image appears for every component wavelength of light and they appear at different diffraction orders. The separate 
+orders correspond to varying amounts of diffraction. The zero order appears in the middle of the detector and has each wavelength exactly overlapping the
+others with zero diffraction. Next out are the +1 and -1 orders which appear on opposite sides of the zero order. These orders show diffraction between
+the component wavelengths with the +1 order mirroring the -1 order. In other words, a wavelength that diffracts to the right of another wavelength in the 
+-1 order will diffract to the left of the corresponding wavelength in the +1 order. This continues with the +2 and -2 orders and so on.
+
+Slitless spectrographs have their own obvious flaw. Complete images of the sun in different wavelengths overlap each other. Furthermore, the extraction
+of data from this conglomerate image can be extremely difficult. This is one of the biggest reasons that slit-spectrographs are still so widely used. 
+However, MOSES attempts to solve many of these problems and produce a complete co-temporal image of the sun.
+ 
+\subsubsection{Procedure}
+
+MOSES is a slitless spectrograph and shares many similarities with the slitless spectrographs that have come before it. However, there are several 
+differences that make the MOSES instrument unique. The first difference is that MOSES is a multi-order slitless spectrograph that actually images more 
+than one diffraction order. Previous multi-order slitless spectrographs usually only image one diffraction order, typically the +1 order. MOSES images
+the +1, 0, and -1 diffraction orders on three separate Charge Coupled Device(CCD) cameras. Another important difference is that MOSES allows only a 
+very narrow band of light
+in the extreme ultra-violet spectrum(EUV) to enter the instrument. The only two prominent wavelengths are the SiXI and HeII wavelengths. This means 
+that there should only be two overlapping images on any of the CCD's. The importance of these two characteristics should not be underestimated. 
+Through the use of a new data extraction process developed by Dr. Kankelborg, the information from these three diffraction orders can be separated 
+into their component images.
+
+The MOSES experiment is tentatively scheduled for July of 2005. Because MOSES operates in the EUV spectrum, it must be flown on
+a rocket that will take it above the majority of the EUV devouring atmosphere. Once it reaches its target altitude it will take a series of images
+over the span of 5 minutes before returning to earth.
+
+
+\subsubsection{Hardware Overview}
+
+MOSES is composed of several subsystems, which each consist in themselves of a variety of different components. Several of the most important
+components include the shutter, filters, mirrors, CCD cameras, read out electronics, and flight computer. These components form the bulk of the instrument 
+and through them the data pipeline can be followed from input to output.
+
+Data initially enters the instrument in the form of light. The shutter opens and closes allowing a certain amount of light to enter the system.
+Thin film filters block the direct sunlight and ensure that only the HeII and SiXI 
+wavelengths are allowed to continue through the instrument. This filtered light is then diffracted off of both a primary and secondary mirror which 
+have both been specially manufactured to an extremely high degree of quality and have also been coated in order to reflect the EUV light. The mirrors 
+direct the diffracted images onto three CCD cameras. This is the end of the data's journey in light form.
+
+The CCD cameras convert the light into electrical charges which can be read out as a 2048x1024 grid of electrical signals. Each grid element accumulates
+an electric charge that is proportional to the amount of light that hits the element. Next, the Read Out Electronics(ROE), a piece of equipment developed
+at Mullard Space Science Lab, reads out the values from the CCDs and converts them into a serial stream of digital values.
+
+Finally, the data is sent through a serial to parallel converter and read in by the Flight Computer where it is both stored for later retrieval and 
+transmitted via telemetry back to a ground station on earth. Besides dealing with data, the Flight Computer is also required to control many other
+aspects of the project. Designing and implementing a system to fulfill these requirements will be the subject of the rest of this paper. 
+
+
+\subsection{Flight Computer Hardware Requirements}
+
+The Flight Computer's functionality is facilitated by a combination of hardware and software, with the hardware forming the foundation upon which
+the software will be written. The payload of a rocket is a very constrained environment and as such, there were certain requirements that hardware 
+had to meet before it could even be considered. Beyond the base requirements, requirements were added to facilitate the basic operation of the instrument.
+Requirements were also added as the result of tasks being moved from dedicated hardware to the Flight Computer. These decisions were often made based on
+the cost and time required to manufacture the dedicated hardware. The following subsections describe each of the requirements in turn.
+
+\subsubsection{Compact and Lightweight}
+
+One of the constraints that naturally goes along with a rocket payload, is a fairly firm budget for mass and space. As far as
+mass goes, there is a firm limit set by NASA on how heavy the payload can be. It is important to meet this requirement from the fundamental
+standpoint of meeting the launch criteria. There is also motivation for this project to not only meet this requirement, but to exceed it. The
+benefit being that the lighter the payload, the higher the rocket will reach. For our project, higher altitude means longer and better observing
+time, both of which are naturally desirable.
+
+In terms of space, almost every piece of the payload is mounted to either side of an optical table donated by Lockheed Martin. With much of the
+space on one side of the table remaining open and unobstructed to facilitate the experiment, the remaining table real estate is a precious commodity.
+
+\subsubsection{High-speed Low Power CPU}
+
+High processing speeds and low power consumption are desirable in any computer system. Unfortunately, the general rule is that the two are
+inversely proportionate. If only one of the two was required the other could be forfeited to reach optimal results. However, both are required
+for this project, which means that a balance must be reached. The processor needs to powerful enough to process the large amounts of data 
+but it cannot be so powerful that it exceeds the system power budget. As if this isn't bad enough, another limitation also enters into the mix.
+Because much of the power consumed by the system is converted to heat, there is a thermal issue that must also be dealt with. When the payload
+is flown, it will be in vacuum. This is a problem for most processors because they rely on air to cool themselves and they break if they
+get too hot. The solution is finding a processor that runs fairly cool. The heat that is produced can then be drawn away from the processor
+with metal braids and dumped into the computer case or some other heat receiving object.
+
+\subsubsection{High-speed Data Acquisition}
+MOSES produces a lot of data. Consider that each CCD camera provides 2048x1024 16 bit pixels and the ROE is actually designed to readout four
+CCDs. The data from each CCD is interlaced on its way to the computer, which means that the unused channel cannot simply be ignored. The 
+result is that 16MB of data needs to be acquired by the computer over the course of a four second readout period. This equates to a data 
+acquisition rate of 12Mbps at the computer. This is a fairly high rate and appropriate hardware is required to facilitate the acquisition.
+
+\subsubsection{Solid State Data Storage}
+Data and software need to be stored before, during, and after the experiment. This storage must be solid state for a very important reason.
+As previously mentioned, the payload will be in vacuum during the actual experiment. This causes a serious problem for normal hard drives. 
+Normal magnetic disk hard drives are designed around the assumption that the device will be operated in air. Therefore, the magnetic head
+that reads data from the magnetic platters is designed to ride on a pillow of air while the platters are being rotated to the right position.
+When air is removed from the system, the magnetic head buries itself in the platter and causes irreversible damage to the device. For this
+reason a solid state device is required for this project.
+ 
+The capacity of the device is also important. The amount of data to be collected is estimated at about 750MB. Because all of this data needs
+to be stored on this device, it must be able to accommodate the 750MB of data as well as all of the software to run the system.
+
+\subsubsection{High-speed Serial Output}
+
+A certain degree of redundancy is good for most scientific applications. One redundancy in MOSES is designed to increase the probability
+of recovering collected data. Even though it is very probable that the payload will be recovered in-tact and the data will be preserved on the
+solid state storage, there is always the chance that something goes wrong and the payload is destroyed. Therefore, a design criteria was made that
+at least some of the data should be transmitted via telemetry back to the ground station. NASA has provided the MOSES project with a telemetry 
+channel capable of transmitting at 10Mbps for this purpose. Therefore, the flight computer needs to have some way of outputting the data in serial
+format at 10Mbps.
+
+Some readers may have noticed that the data is being acquired at 12Mbps, but is only being transmitted at 10Mbps. The obvious question arises of 
+whether all of the data will be transmitted. The answer is no. The telemetry is a secondary system only intended to guarantee that some data will be
+retrieved, even if the solid state storage fails or is destroyed.
+
+\subsubsection{Digital Signal Processing \& Generation}
+
+Moses relies on digital communication between its internal components. Many of these components need to communicate with the Flight Computer and in turn
+the Flight Computer needs to communicate with many components. Therefore, it is essential that the Flight Computer have some way of performing digital
+input and output. Specifically, input from the Timer \& Uplink deck is required to ensure that the computer performs different operations at the correct
+times and output is required to control both the power subsystem and the shutter.
+
+\subsubsection{Multiple Low Speed Serial Transmission Channels}
+
+Several low speed serial ports are required for advanced communication within MOSES. All of the serial ports need to conform to the RS422 specification
+for differential serial communication. One of the lines is required for commanding the ROE. Some of these commands are simple one or two byte commands that
+simply tell the ROE to do something like flush the CCDs or to reset. Other commands are more complex and can configure the ROE in a number of ways, many
+of which are used for trouble shooting and diagnostics. This line also needs to be capable of sending at 9600 Baud.
+
+Another set of serial lines are needed for in flight communications with the ground station. These lines connect to another telemetry deck that will transmit
+the signals back to Earth. One line is strictly an uplink while the other is strictly a downlink.
+These communications lines will be used for any manual overrides, should such actions be necessary, as well as querying the system for useful information
+and for streaming housekeeping information. Housekeeping refers to information having to do with the overall status of the system. Both of these lines must
+also be RS422. The downlink needs to be capable of operation at 9600 Baud, but the uplink only needs to operate at 1200 Baud.
+
+\subsubsection{Efficient DC-DC Power Supply}
+
+All of the power within MOSES is supplied by a massive 28V battery stack. Computers require several different voltages to operate, none of which are normally
+28V. Therefore, the Flight Computer needs to have a DC-DC power supply that is capable of taking either the 28V straight from the battery or 12V from a 
+separate DC-DC power supply within MOSES and converting it to the voltages required by the Flight Computer. Again, because there is a strict power budget,
+the power supply should be as efficient as possible.
+
+\subsubsection{Onboard System Hardware Housekeeping}
+
+The Flight Computer also needs to be able to monitoring and measuring important system housekeeping information such as voltages and temperatures. These
+values will be monitored during testing and during the experiment to ensure that the system is working correctly. Unstable voltages and temperatures
+within the system can cause hardware to fail or permanently break.
+
+\subsubsection{Umbilical Support}
+
+Finally, some form of umbilical port is required for making a physical connection with the payload after it lands for the purpose of extracting the data.
+A connection between this port and the outside of the rocket will allow for the fastest data extraction. This is important because the systems power will
+only last a short time after landing. If the data is not extracted before power failure, the task of retrieving the data will become a lot more laborious.
+
+
+\subsection{Flight Computer Software Requirements}
+
+Hardware is of little use without software to control it. The software is the part of the Flight Computer that orchestrates the entire experiment. 
+Many of the software requirements are directly related to hardware requirements. Other software
+requirements are designed to ensure that the software can work together.
+
+\subsubsection{Operating System}
+The operating system is the intermediary between the user software and the hardware. Finding the right operating system for this project is imperative.
+There are several requirements for an operating system being used on MOSES. First, it must be compact. Most solid state storage has far less capacity
+than an equivalent device with moving parts. The operating system must leave enough space for the data. Second, the operating system must be adaptable.
+It is important that we can tailor the O.S. to fit our needs. Third, the operating system must be stable. Crashing in the middle of flight would be 
+disastrous.
+
+\subsubsection{High Resolution Timing}
+
+Much of the value of the data that is collected is dependent upon knowing exactly how much light was allowed to enter the instrument. The amount of
+light that enters the system during each exposure is controlled by the shutter which in turn is controlled by the Flight Computer. Therefore, the 
+computer needs to be able to be able to control the shutter with a high degree of accuracy and more importantly it needs to be able to determine the
+length of time that the shutter remains open. The mission specification requires the shutter to be controllable to within 10ms with the accuracy known
+to within 1ms. To achieve this, some form of high resolution timing is required.
+
+
+\subsubsection{Data Processing \& Storage}
+ 
+Software is required to control the shutter and to perform the data acquisition as well as sort and filter the data. There must also be software 
+written to automate the storage
+and transmission of the data. This software will have to interface to both the data acquisition hardware as well as the high speed serial output 
+hardware. Sorting and filtering must be performed because the data from the images is interlaced and one channel from the ROE will contain fake 
+data because there are only three CCDs. This fake data must be filtered out of the system. This software must also keep all of these things
+synchronized. 
+
+
+\subsubsection{Timer \& Uplink Processing}
+Timer and Uplink pins let the computer know where it is in the experiment. Software is required to monitor these pins and notify the rest of the system
+when something has changed.
+
+
+\subsubsection{Power System Control}
+
+Power to most of the other subsystems in MOSES is controlled by placing different signals onto control lines connected to the computer. Software for 
+controlling these signals is required.
+
+\subsubsection{Process Concurrency}
+
+All of the software for controlling the different systems need to be running concurrently. Furthermore, many tasks within different processes need to
+be happening concurrently. This calls for a multithreaded approach. Therefore, the software needs some way of supporting multitasking. It must also ensure
+that shared data is threadsafe. Threadsafe basically means that one thread cannot alter data while another thread is in the process of reading that same
+data. This ensures that data is not accidentally corrupted.
+
+\subsubsection{System Software Housekeeping}
+There are many aspects of the software status that it will be desirable to know during testing and during the experiment. Therefore, some kind of 
+housekeeping software is needed to keep track of software status, including such things as current exposure sequence and current position in the 
+current exposure sequence. 
+
+\subsubsection{Sufficient Transmission Encoding}
+One problem with transmitting a digital signal via telemetry is that the characteristics of the data can affect the probability of the signal being
+received correctly. For instance, long strings of 1's can cause the voltage of the signal to wander. This voltage wandering can render the receiving end 
+incapable of recovering an accurate clock with which to extract the data. Because of this and similar issues, an encoding of the data is necessary that 
+will provide the highest degree of likelihood that the data will be received correctly.
+
+\subsubsection{Autonomy}
+Obviously, being part of a rocket payload requires that this software be semi-autonomous. It needs to be able to run the entire experiment, without human
+input, based entirely on input from a preprogrammed timer deck. This means that a lot of interprocess communication needs to take place to ensure that
+all pieces of software are performing the correct tasks at any point during the experiment.
+
+\subsubsection{Manual Override}
+
+As with anything in real life, there are a thousand possible things that could go wrong during the experiment. Therefore, it is necessary that some form
+of manual override be available during the experiment. This manual override should allow someone at the ground station to alter any aspect of the experiment.
+The software must provide the ability to control the power subsystem, data acquisition, and ROE, as well as to alter the exposure sequence and to simulate 
+Timers and Uplinks. Clearly, this kind of power could be very dangerous so safeguards should be in place to provide such things as error detecting for
+the physical link that carries the signal. It could be disastrous if a command sent by the ground station was corrupted during transmission and then 
+misunderstood to be a different command by the Flight Computer. All of these issues must be accounted for in the software.
+
+
+
+
+
+
+
+\section{Methods}
+
+
+\subsection{Hardware}
+The majority of the hardware requirements were met with only a handful of commercial components. The following subsections describe these products and
+clarify how they fulfilled the requirements.
+
+\subsubsection{PC104+ Architecture}
+At this point is important to note that we decided to go with the PC104+ computer architecture. This relatively new form-factor is surprising compact
+and power efficient. It also supports a high speed PCI bus for excellent system throughput. PC104+ boards are interesting because unlike most modern 
+computers that have slots for add-on cards, PC104+ cards stack on top of each other with the system bus running up through the cards. In this way the
+cards form a stack that is the basis for the physical infrastructure.
+
+\subsubsection{EBX Hercules Single Board Computer}
+The base system functionality is provided by the EBX Hercules single board computer from Diamond Systems. This card supports a 500Mhz VIA C3 Processor,
+which runs surprisingly cool, 128MB SDRAM, four RS232/485 Serial Ports for low speed serial communication, an RJ-45 Ethernet port for umbilical support,
+and a Digital I/O pin header that provides digital input/output signal processing.
+
+
+\subsubsection{PCI FIO Data Acquisition Board}
+Data Acquisition is provided by the PCI FIO board from RPA Electronics. This board is interesting in that it provides a programmable FPGA chip which the 
+user loads with their own design to acquire the data. The board also contains a FIFO for buffering the data, as well as user software and libraries to 
+support reading information from the FIFO on the computer side and loading designs into the FIFO.
+
+The idea of using an FPGA chip was that the card would become a lot more flexible. Users can tailor the design to fit their specific needs. The card also
+contains an EEPROM which can be loaded with the design and a jumper can be selected which loads the FPGA from the EEPROM upon startup. That way the design
+doesn't need to be loaded into the chip by the user every time the computer is restarted.
+
+The card also uses direct memory access to increase the data throughput. Advertised rates are over 30MBps. 
+
+\subsubsection{SuperFastCom High-speed Serial Output Card}
+High-speed serial output is accomplished with the SuperFastCom card from Commtech. This card claims to operate at up to 10Mbps. An added bonus is that
+the card can be configured to use an HDLC and NRZI encoding. Without going into to much detail, these encodings are great for ensuring that transmitted
+data isn't corrupted. The NRZI encoding prohibits dangerous voltage wandering as well.
+
+ 
+\subsubsection{E-Disk Solid State Flashdrive}
+For solid state storage, we decided to go with the E-Disk Flashdrive from Bitmicro. This drive has a capacity of 1GB and can support throughput of up to
+66MBps. This device is also low power and produces very little heat. It requires no air flow for cooling purposes. It is also military grade and can 
+withstand a large range of temperatures and acceleration.
+
+
+\subsection{Software}
+
+With the exception of the operating system and the hardware drivers, all of the software for this project has been written in house. Design of 
+the software followed a top-down design and implementation approach. Similar software tasks have been grouped together to form larger applications.
+Currently, the software consists of four programs plus the operating system. Each of these is described in further detail in the following subsections.
+
+\subsubsection{Linux Operating System}
+We chose to use Linux for our operating system. This seemed to be an obvious choice for a number of reasons. First, Linux is a general purpose O.S. 
+that could provide us with all of the power we need. Second, Linux is open source and can be adapted and streamlined to fit our specific needs. One 
+important ability this provides us is being able to slim the operating system by keeping only what we need and removing everything else. This
+allows us to fit the O.S. onto the flashdisk with 750MB reserved for data.
+
+\subsubsection{Concurrency}
+The Pthreads library is a UNIX based system library that provides an easy way to implement multithreading within an application. It also provides
+methods of performing some synchronization between threads. For example, mutexes allow locks to be placed around resources. These locks ensure that
+two threads can't access the same resource at the same time. The Pthreads library also provides conditional variables which allow threads to wait for
+certain conditions to become true. This can be used to synchronize threads that need to perform a group task in a specific order.  
+
+\subsubsection{I/O Server}
+The I/O Server provides all of the house keeping information for the computer and also allows for the manual override of any other program. It also
+provides a virtual shell, so a user can alter any part of the operating system as well. The protocol for communicating with I/O server enforces a 
+stringent error detection policy to keep corrupted commands from damaging the system.
+
+\subsubsection{Power Server}
+Controlling the power subsystem is accomplished with the Power Server program. This program utilizes the digital I/O provided by the Hercules EBX board to
+communicate with the power subsystem. This program also provides an interface whereby it can be commanded or queried about the power subsystem.
+
+\subsubsection{Virtual Timer and Uplink Deck(VTMUDeck)}
+The Virtual Timer and Uplink Deck is a piece of software that monitors the digital I/O pins that are connected to the physical Timer and Uplink Deck. This
+program continually polls these pins and uses signals and FIFOs to notify the appropriate applications when a timer or an uplink has been detected.
+
+\subsubsection{Mission Data Acquisition(MDAQ)}
+The Mission Data Acquisition(MDAQ) program implements most of the internal data pipeline. It controls the shutter, ROE, PCI FIO, and SFC cards. It 
+commands the shutter with the digital I/O on the Hercules board and uses the gettimeofday() system call for high resolution timing. This function 
+operates in microseconds, so it is highly likely that we are satisfying the timing requirements of 10ms control and 1ms known accuracy. The MDAQ program
+also contains a set of exposure sequences that run when input is received from the VTMUDeck program indicating certain timer events. Command of the
+ROE is accomplished with simple commands being sent down the appropriate serial link. Actual data acquisition is provided through the use of a library
+provided with the PCI FIO card. After acquisition, the MDAQ program sorts the data into the appropriate images and filters out the image data from the
+unused channel. Next, the data is written to disk and then a separate thread of execution continually sends received data to the SuperFastCom card for
+transmission. 
+
+The MDAQ program also contains an interface which the I/O server can use to manually control the data acquisition process. Through this interface, 
+every aspect of the exposure sequences can be altered. A sequence can even be stopped mid-exposure. Besides controlling the program, the interface
+can be used to query for housekeeping data such as current position in sequence or any of a multitude of housekeeping values for the ROE.
+ 
+\section{Results / Analysis}
+
+This project is still in progress. That being the case, many results are still unavailable. 
+Understandably, further analysis of much of the project is difficult or impossible at this time. However, the
+results that are currently known are very encouraging and will be covered in the remaining subsections. Where possible, an analysis 
+of the results has been performed. 
+
+\subsection{Hardware Performance}
+
+In general, the hardware has performed with a high level of quality. We have experienced little hardware difficulties with the equipment that 
+we have purchased. For the most part, the system works as it was
+intended. 
+
+\subsubsection{Speed}
+Speed testing for storage devices can be very difficult due to the nature of the device, so we have been yet unable to acquire any numerical
+data about the actual speed of the Bitmicro Flashdisk in practice. What we do know, is that there have been no problems yet with the speed of
+the device. The Flashdisk showed no lag under heavy work loads. In fact, the Flashdisk has been one of the most stable pieces of hardware that
+we have purchased.
+
+The PCI FIO data acquisition card produced great results when tested for speed. Despite the slightly contrived nature of the benchmark tests, 
+the card was still operating at over 30MBps. This well exceeded the 12Mbps required and everyone is satisfied that the speed of the card will
+not be an issue.
+
+The overall speed of the computer was also encouraging. Much of this speed was the result of using a commercial CPU. The processor ran fast enough
+to provide sufficiently high resolution timing, despite the non-real-time and non-preemptive operating system.
+ 
+\subsubsection{Stability}
+
+The stability of the hardware in general has been very encouraging with the exception of the RS232/485 serial ports. Despite assurance from
+vendors of the compatibility between RS485 and RS422, slight differences in hardware characteristics caused seemingly random communication 
+errors. Steps are being taken to rectify the situation and to provide truly RS422 serial ports.
+
+\subsubsection{Useability}
+
+Hardware usability was good, in general. However, the PCI FIO card ended up having a very steep learning curve that made it an expensive decision
+in terms of man hours. Producing a working design for the FPGA was also incredibly time consuming. This card is incredibly powerful and flexible,
+but in the future we would recommend its use only if an FPGA design expert is close at hand or if the power and flexibility is absolutely
+necessary.
+
+\subsection{Software Performance}
+
+As is the nature of software, many minor difficulties have been experienced, however these had little effect on this system as a whole and will
+not be covered. Instead, only a general summary of the software performance is provided with the exception of several major benefits or consequences.
+
+\subsubsection{Stability}
+
+The operating system has been very stable throughout this project. This is indicative of the general purpose O.S. we chose to run. Linux, in general, 
+has been widely used and highly tested. The high-speed underlying hardware also allowed the system to remain highly responsive.	
+
+
+Concurrency became an issue when it was discovered that Pthreads and system signals have a difficult time 
+coexisting within the same code. Fortunately, work-arounds were discovered that bypassed these limitations. Also, it
+  was discovered that condition signals that were sent within the system were not queued and could be lost if
+  the thread that was waiting on the conditional variable was not yet in the waiting state. These issues required a significant code restructuring.
+
+\subsubsection{Control Accuracy}
+Shutter control proved to be very accurate and very repeatable. Accuracy could be controlled to within fractions 
+of a millisecond and could be known on an unloaded system to within 4us.
+
+\section{Remaining To-do List}
+
+The most important remaining task is a full system integration in two steps. First, all of the software must be tested for compatibility and can be
+guaranteed to work together. Second, the Flight Computer must be integrated with the other subsystems in the payload and must be tested to ensure full
+system interoperability.
+
+Another remaining task is a final speed and space optimization scheduled to take place after the software has been thoroughly tested for correct 
+functionality. This optimization will ensure that the system remains responsive and can store as much science data as possible.
+
+Of lesser concern is the necessity of acquiring truly RS422 serial ports. This will most likely only require the purchase of serial converters or an
+RS 422 add-on board. This is anticipated to be a minor hardware change and software impact is speculated to be minimal.
+
+
+\section{Conclusions}
+In summary, proper operation of the MOSES experiment requires a soundly designed and implemented Flight Computer. The computer is not only responsible for
+nearly every stage of the data pipeline, but it must also control and interact with an assortment of other systems within the payload. Hardware has been chosen
+to facilitate the physical requirements of the Flight Computer and software has been designed and written to operate the hardware and orchestrate the 
+entire experiment. It remains to be seen whether or not this system will work correctly during the experiment, but preliminary testing has been encouraging.
+If successful, it is anticipated that this system might be used as the basis for similar systems in the future.
+
+
+\end{document}
+

@@ -1,0 +1,101 @@
+%\documentclass[11pt]{article}
+%\begin{document}
+\section{\bf V\rm irtual \bf T\rm i\bf M\rm er and \bf U\rm plink(VTMU) Deck }
+\hrulefill
+\\ 
+The VTMUDeck is the interface through which timers and uplinks gain entry into 
+the system. In essence, this program is nothing more than a loop which poles 
+several banks of digital I/O pins looking for state changes and taking the appropriate 
+actions when these changes occur. Currently, there are five predefined timers, 
+nine uplinks, and one somewhat unrelated shutter signal. These signals are read 
+in on DIO ports A \& B using the DIOBoard class. Changes in the pins are exposed 
+by taking the exclusive or of the new pins and the old pins. Any bits that have 
+changed become ones while those that have stayed the same become zeros. Currently, 
+the software only supports having a maximum of one bit change on any given iteration. 
+Fortunately, due to the nature of the Timers and Uplinks, having concurrent signals 
+is very unlikely, and would most likely be the result of a very unusual situation. Also, 
+the software has roughly one millisecond timing resolution, which should be sufficient 
+for its target environment.
+\\
+\\
+Pin position must be calculated to discern the meaning of the input. As the input is
+ read in as an unsigned integral 8 bit value, the position of the changed bit can be
+ calculated by the $log_2$ of the value. The initial result which is of type double 
+must be converted to an int. Due to the internal representation of doubles, it is possible 
+for a value such as 15 to be stored as 14.99999... This poses a problem because a conversion 
+to int will merely truncate anything past the decimal point. In the previous example, 
+$log_2$ 128 becomes 14.99999 which is converted to 14! To avoid this, we take the value 
+multiplied by 1000 plus one, then we divide by 1000 to get the final result. So, 14.99999 
+becomes 14999.99 = 14999 + 1 = 15000 / 1000 = 15. This accomplished by the following code:
+
+\begin{verbatim}
+        temp = (board.readPins(DIOBoard::PORTA) << 8 | 
+                board.readPins(DIOBoard::PORTB) );
+        diff = temp ^ pins; 
+        double dindex = log10(double(diff)) / log10(2.0);
+        int index = (int(dindex*1000)+1) / 1000;
+\end{verbatim}
+Where pins was the value of pins after the previous read.
+
+\subsection{Timers}
+As previously mentioned, there are five predefined timer signals. These include \it Data 
+Start, Data Stop, Dark 2, Dark 4, \rm and \it Sleep\rm . All but the \it Sleep \rm timer 
+are used to initiate exposure sequences. The difference between the Dark Sequences and the 
+Data Sequence is that only the Data Sequence opens the shutter during an exposure. It 
+should also be noted that the \it Data Stop \rm timer serves as a dual purpose timer. It not only 
+instructs the Data Sequence to stop, but it also initiates the Dark 3 Sequence. When any 
+of these signals are detected, the VTMUDeck uses MIOPipe to convey the signal to the MDAQ 
+Program. Also, the IOSPipe is used to inform the IOServer of the signals arrival.
+\\
+\\
+The \it Sleep \rm timer is used to put the computer to sleep while it is coming back down 
+to Earth. This is mostly concerned with conserving power so that there is enough left to 
+extract the data once the payload is recovered. The sleep command first uses the IOSPipe 
+to inform the IOServer of the signals arrival. Next it forks to create a new process. This 
+process is then overwritten with the 'apmsleep' command by using the execlp system call. 
+When given the '--standby' parameter, the 'apmsleep' command proceeds to put the computer 
+into standby mode until it either receives an interrupt or exceeds its timeout limit. This 
+limit is given as a parameter in the form "+hh:mm". In this program the limit is set as 20 
+minutes. The command as a whole appears as follows:
+\begin{verbatim}
+  if(fork() == 0)
+    execlp("apmsleep","apmsleep","--standby","+00:20",(char *)0);
+\end{verbatim}
+
+\subsection{Uplinks}
+There are currently nine uplinks that the VTMUDeck is programmed to respond to. Many of these
+only serve as an added layer of redundancy and perform virtually the same task as one of the
+predefined timers. The benefit to having the uplinks is that they can be issued at any time and 
+can be issued multiple times, should an earlier uplink / timer fail or need to be repeated. Besides
+the \it Data Start, Data Stop, Dark 2, Dark 4, \rm and \it Sleep \rm uplinks, which perform obvious
+functions, there are \it Dark 1, Dark 3, Wake, \rm and \it Test \rm uplinks as well. There might 
+be some curiosity at this point as to why \it Dark 1 \rm does not have its own timer. The reason
+is simple. As it is currently planned, the Dark 1 Sequence will be taken while the payload is still
+on the rail. Therefore, there is no need, and in fact it would make no sense, to have a pretimed timer.
+The \it Dark 3\rm timer should be self explanatory.
+\\
+\\
+This brings us to \it Wake \rm and \it Test \rm. To be honest \it Wake \rm does not wake the system as you might
+naturally assume. In order to execute the \it Wake \rm code, the computer must allready be awake. Therefore,
+the \it Wake \rm code only serves to inform the IOServer that the computer has been awoken. In some sense the 
+\it Test \rm uplink is very similar to \it Wake \rm. It too only serves to inform the IOServer of its arrival. This
+might make more sense for \it Test \rm though, because its purpose is to test the responsiveness of the computer and
+in particular the IOServer.
+
+\subsection{Shutter}
+
+Finally we come to the shutter signal. This signal indicates whether the shutter is open or closed. In this sense,
+it is the only pin that we would also like to know when it goes off as well as when it comes on. Therefore, there are two
+nearly identicle pieces of code, one for when the pin goes high and one for when it goes low. In both cases a highly 
+precise timing is acquired after this signal has been received. This timing is then sent to the IOServer along with 
+a specification 
+as to whether this is a shutter open or close signal, and all of this information is formated and sent down the H/K Downlink.
+It can be used later to determine the acuracy of our exposure durations.
+\\
+\\
+It might be helpfull to note that high resolution timing is accomplished through the unix gettimeofday() function. This
+function is particularily usefull because it can achieve microsecond resolution. It is the basis for all high resolution
+timing in this software.
+
+%\end{document}
+
