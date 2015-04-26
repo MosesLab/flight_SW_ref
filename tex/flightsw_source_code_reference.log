@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.2.13)  26 APR 2015 16:09
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.2.13)  26 APR 2015 16:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -281,14 +281,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 4--6
 ]) [7]
 \openout2 = `architecture.aux'.
 
- (./architecture.tex
-Missing character: There is no â in font cmr10!
-Missing character: There is no € in font cmr10!
-Missing character: There is no œ in font cmr10!
-Missing character: There is no â in font cmr10!
-Missing character: There is no € in font cmr10!
-Missing character: There is no  in font cmr10!
-) [8
+ (./architecture.tex) [8
 
 
 ]
@@ -303,7 +296,7 @@ erted-to.pdf images/mfsw_block.eps>
 (epstopdf)             \includegraphics on input line 42.
 Package epstopdf Info: Output file is already uptodate.
 
-<images/mfsw_block-eps-converted-to.pdf, id=37, 1232.605pt x 628.3475pt>
+<images/mfsw_block-eps-converted-to.pdf, id=38, 1232.605pt x 628.3475pt>
 File: images/mfsw_block-eps-converted-to.pdf Graphic file (type pdf)
 
 <use images/mfsw_block-eps-converted-to.pdf>
@@ -409,11 +402,11 @@ Underfull \hbox (badness 10000) in paragraph at lines 4--6
 (./gpio_thread.aux) (./fpga_server_thread.aux) (./hlp_threads.aux)
 (./telem_thread.aux) (./dictionary.aux)) ) 
 Here is how much of TeX's memory you used:
- 2205 strings out of 493304
- 32046 string characters out of 6139871
+ 2207 strings out of 493304
+ 32070 string characters out of 6139871
  102830 words of memory out of 5000000
- 5553 multiletter control sequences out of 15000+600000
- 8811 words of font info for 31 fonts, out of 8000000 for 9000
+ 5554 multiletter control sequences out of 15000+600000
+ 8979 words of font info for 32 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  37i,6n,32p,1171b,249s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/
@@ -422,11 +415,11 @@ public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 /amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfo
 nts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.p
-fb>
-Output written on flightsw_source_code_reference.pdf (18 pages, 135397 bytes).
+fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on flightsw_source_code_reference.pdf (18 pages, 147846 bytes).
 PDF statistics:
- 95 PDF objects out of 1000 (max. 8388607)
- 65 compressed objects within 1 object stream
+ 99 PDF objects out of 1000 (max. 8388607)
+ 68 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 
