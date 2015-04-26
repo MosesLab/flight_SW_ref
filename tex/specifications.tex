@@ -1,44 +1,49 @@
 %\documentclass[11pt]{article}
 %\begin{document}
-\section{Specifications for Operating the MOSES Instrument}
+\section{Requirements for Operating the MOSES Instrument}
 \hrulefill
 \\
-Specifications...
 \begin{enumerate}
   \item Operate power systems on the instrument. The power systems include: 
 	\begin{enumerate}
-		\item Shutter Driver
-		\item ROE
-		\item Premod Filter
-		\item Temperature Control Systems
-		\item Voltage Regulators
-		\item H-alpha Camera
+		\item Shutter Driver: Must be activated to control the shutter.
+		\item ROE: Must be activated to readout and flush the CCDs for exposures.
+		\item Premod Filter: This system must be activated for high-speed telemetry to be used. It uses a hardware random number generator to randomize the telemetry data. This is important as the telemetry stream must have equal numbers of ones and zeros to be properly reconstructed on the ground.
+		\item Temperature Control Systems: These systems provide cooling to the instrument while under vaccum. The CCDs are cooled using this system to minimize the noise inherent in the CCDs. The flight computer must also be cooled under vacuum to prevent overheating, as it is normally air-cooled. It must be noted that this system is NOT to be turned on while the instrument is at atmospheric pressure.
+		\item 5V Regulator: This must be on to provide the premod filter with a -5V rail.
+		\item 12V Regulator: Among other things, this subsytem activates the analog telemetry monitoring.
+		\item H-$\alpha$ Camera: This camera is used in flight as a targeting system, to ensure the attitude of the payload is appropriate. This is an analog system, so the data produced by the H-$\alpha$ camera is not moderated by the flight computer, it is only activated through the flight computer.
 	\end{enumerate}
-The flight software is directed to turn on/off power systems through the HLP link.
+The flight software is directed to turn on/off power systems through HLP packets sent by the EGSE.
 
-  \item Command the read-out electronics (ROE). This is accomplished using an RS-422 serial connection between the FC and the ROE. Common task include: commanding exposures, flushing the CCDs, and requesting housekeeping data.
+  \item Control the read-out electronics (ROE). This is accomplished using an RS-422 serial connection between the FC and the ROE. Common task include: commanding exposures, flushing the CCDs, and requesting housekeeping data such as voltages and currents.
+  
+  \item Open and close the Shutter. The Shutter depends on two GPIO lines (open and close) and each must be pulsed for 200ms to execute their respective operations.
 
-  \item Receive and save science data. The ROE sends science data over a ?32 Mbit/sec? parallel connection. The FSW should be fast enough so as to not miss any science data. 
+  \item Receive and save science data. Through the SPU, the ROE sends science data over a 32 Mbit/sec parallel connection. The FSW should have low enough latency so as to not miss any science data. The FSW should save each image as a 16 MB file with the extension .roe.
+  
+  \item Create an index of the images that were captured. This index is critical to the IDL software used to analyze MOSES images. This index should contain the name of the file, the number channels in the file
 
-  \item Send science data over telemetry. NASA has provided a 10 Mbit/sec serial line that connects with a radio to the ground. During the course of the mission, the FSW should send as much science data back to earth as possible to mitigate data loss from the harsh re-entry environment.
+  \item Send science data over telemetry. NASA has provided a 10 Mbit/sec serial line that connects with a radio to the ground. During the course of the mission. While there is not enough time to send all of the data, the MFSW should send as much science data back to earth as possible to mitigate data loss from the harsh re-entry environment.
 
-  \item Respond to timers and uplinks. Timers are single lines provided by NASA that instruct the instrument when to execute the different parts of the experiment. Timers include: 
+  \item Respond to Timers and Uplinks. Timers are single lines provided by NASA that instruct the instrument when to execute the different parts of the experiment. Timers include: 
 	\begin{enumerate}
-		\item Dark Exposure Start
-		\item Data Start
-		\item Data Stop
-		\item Sleep
+		\item Dark Exposure Start: These exposures don't open the shutter while taking an exposure. They are used to provide a baseline for the CCDs for data analysis post-flight.
+		\item Data Start: This command carries out the data sequence outlined in a sequence file (to be explained later).
+		\item Data Stop: Stops the current sequence whether it be a dark sequence or a data sequence. The sequence stops only after the current exposure has completed. Note: This command only stops the current data sequence. If there is more than one data sequence enqueued to the Science Timeline, the FSW will just start the next sequence following Data Stop.
+		\item Sleep: Instructs the flight software to stop and to shut down the computer. This is important as we don't want the flight computer to be damaged during reentry into the atmosphere.
 	\end{enumerate}
-dark exposure start, data start, data stop, and sleep. Dark exposures are those which don’t open the shutter during the data gathering phase of the science timeline. Uplinks are similar to timers in that they have the same functionality, except they are tied to a physical button on the ground. Using this interface, a user could control the experiment from just the push-button on the GSE. 
+ Dark exposures are those which don't open the shutter while the CCDs are being exposed during the Science Timeline. Uplinks are similar to Timers in that they have the same functionality, except they are tied to a physical button on the ground. Using this interface, a user could control the experiment from just the push-button on the EGSE tower. 
 
-  \item Respond to HLP packets. These packets are sent by the EGSE software on the ground, and provide an additional interface to control the instrument. Two RS-232 connections are provided by NASA to facilitate this interface: HKUP and HKDOWN. Possible types of HLP packets include:
+  \item Respond to HLP packets. These packets are sent by the EGSE software on the ground, and provide all the functionality of Uplinks and Timers while providing additional commands to control the instrument. Two RS-232 connections are provided by NASA to facilitate this interface: HKUP and HKDOWN. Possible types of HLP packets include:
 	\begin{enumerate}
-		\item Uplink
-		\item Shell
-		\item Power
-		\item Housekeeping Requests
-		\item Mission Data Aquisition Requests
+		\item Uplink: Provides the same functionality as Uplinks initiated through the GPIO interface (e.g. Data Start, Data Stop, etc.)
+		\item Shell: The FSW opens a bash shell as a child process. Shell packets can execute bash commands on the FC via this interface.
+		\item Power: Queries, activates or deactivates power subsystems.
+		\item Housekeeping Requests: Requests housekeeping data from the ROE.
+		\item Mission Data Acquisition Requests: Allows direct control over exposure parameters and can also control the ROE.
 	\end{enumerate}
+The HLP interface is the main interface used for debugging and testing the instrument. This interface is also important during flight as it sends packets that inform the users of the current state of the FSW.
 	
 \end{enumerate}
 

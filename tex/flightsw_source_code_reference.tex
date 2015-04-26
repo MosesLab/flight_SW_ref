@@ -1,6 +1,9 @@
 \documentclass[11pt,titlepage]{article}
 
+\usepackage[margin=1in]{geometry} 
 \usepackage{long table} % long tables
+\usepackage{pdflscape}
+\usepackage{graphicx}
 
 \title{MOSES Flight Software \\ A Guide to the Source}
 \author{David Keltgen, Roy Smart, Jackson Remington}
@@ -21,6 +24,8 @@
 		\hline
 		0.1	&	03-11-2015	&	Created	& DJK	\\
 		\hline
+		0.2 & 4-26-2015 & Updated & RTS \\
+		\hline
 
 	\end{longtable}
 	
@@ -31,6 +36,13 @@
 \include{main_subsystems}
 \include{specifications}
 \include{architecture}
+\begin{landscape}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=24.5cm]{images/mfsw_block}
+\caption{Block diagram summarizing the flight software architecture.}
+\end{figure}
+\end{landscape}
 \include{main_thread}
 \include{sci_timeline_thread}
 \include{image_writer_thread}
@@ -39,5 +51,5 @@
 \include{hlp_threads}
 \include{telem_thread}
 \include{dictionary}
-\
+
 \end{document}

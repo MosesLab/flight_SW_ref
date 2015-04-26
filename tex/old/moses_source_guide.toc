@@ -1,0 +1,32 @@
+\contentsline {section}{\numberline {1}Introduction}{2}
+\contentsline {section}{\numberline {2}\bf V\rm irtual \bf T\rm i\bf M\rm er and \bf U\rm plink(VTMU) Deck }{3}
+\contentsline {subsection}{\numberline {2.1}Timers}{3}
+\contentsline {subsection}{\numberline {2.2}Uplinks}{4}
+\contentsline {subsection}{\numberline {2.3}Shutter}{5}
+\contentsline {section}{\numberline {3}Power Server}{6}
+\contentsline {subsection}{\numberline {3.1}Internal Structure}{6}
+\contentsline {subsection}{\numberline {3.2}Automatic Powerup at Startup}{6}
+\contentsline {section}{\numberline {4}\bf M\rm ission \bf D\rm ata \bf A\rm c\bf Q\rm uisition(MDAQ) }{8}
+\contentsline {subsection}{\numberline {4.1}Internal Structure}{8}
+\contentsline {subsubsection}{\numberline {4.1.1}Main Thread}{8}
+\contentsline {subsubsection}{\numberline {4.1.2}Telemetry Thread}{9}
+\contentsline {subsubsection}{\numberline {4.1.3}Interactive I/O Thread}{10}
+\contentsline {subsubsection}{\numberline {4.1.4}Data Acquisition}{12}
+\contentsline {subsection}{\numberline {4.2}Helper Classes}{13}
+\contentsline {subsubsection}{\numberline {4.2.1}InitAttr}{13}
+\contentsline {subsubsection}{\numberline {4.2.2}Sequence}{14}
+\contentsline {subsubsection}{\numberline {4.2.3}ReadOutElectronics}{16}
+\contentsline {subsubsection}{\numberline {4.2.4}DmaDaq}{17}
+\contentsline {subsubsection}{\numberline {4.2.5}RoeImage}{18}
+\contentsline {section}{\numberline {5}\bf I\rm nput \bf O\rm utput(IO) Server}{20}
+\contentsline {subsection}{\numberline {5.1}Internal Structure}{20}
+\contentsline {subsubsection}{\numberline {5.1.1}Main Thread}{20}
+\contentsline {subsubsection}{\numberline {5.1.2}Shell Output Thread}{21}
+\contentsline {subsubsection}{\numberline {5.1.3}VTMUDeck Input Thread}{22}
+\contentsline {subsubsection}{\numberline {5.1.4}Streaming HouseKeeping Thread}{22}
+\contentsline {subsection}{\numberline {5.2}Helper Classes}{22}
+\contentsline {subsubsection}{\numberline {5.2.1}Packet}{22}
+\contentsline {subsubsection}{\numberline {5.2.2}InputPacketStream \& OutputPacketStream}{23}
+\contentsline {subsubsection}{\numberline {5.2.3}\bf V\rm irtual(V) Shell}{23}
+\contentsline {section}{\numberline {6}Appendix A - Digital I/O Pinouts}{24}
+\contentsline {section}{\numberline {7}Appendix B - Notes on Software Usage}{26}

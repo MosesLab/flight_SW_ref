@@ -1,13 +1,13 @@
 \contentsline {section}{\numberline {1}Revisions}{2}
 \contentsline {section}{\numberline {2}Introduction}{3}
 \contentsline {section}{\numberline {3}Main Subsystems}{4}
-\contentsline {section}{\numberline {4}Specifications for Operating the MOSES Instrument}{5}
-\contentsline {section}{\numberline {5}Architecture Description}{7}
-\contentsline {section}{\numberline {6}Main Thread}{8}
-\contentsline {section}{\numberline {7}Science Timeline Thread}{9}
-\contentsline {subsection}{\numberline {7.1}Read Out Electronics (ROE)}{9}
-\contentsline {section}{\numberline {8}Image Writer Thread}{12}
-\contentsline {section}{\numberline {9}GPIO Thread }{13}
-\contentsline {section}{\numberline {10}FPGA Server}{14}
-\contentsline {section}{\numberline {11}House-keeping Link Protocol (HLP)}{15}
-\contentsline {section}{\numberline {12}\bf Dictionary of Abbreviations }{16}
+\contentsline {section}{\numberline {4}Requirements for Operating the MOSES Instrument}{6}
+\contentsline {section}{\numberline {5}Architecture Description}{8}
+\contentsline {section}{\numberline {6}Main Thread}{10}
+\contentsline {section}{\numberline {7}Science Timeline Thread}{11}
+\contentsline {subsection}{\numberline {7.1}Read Out Electronics (ROE)}{11}
+\contentsline {section}{\numberline {8}Image Writer Thread}{13}
+\contentsline {section}{\numberline {9}GPIO Thread }{14}
+\contentsline {section}{\numberline {10}FPGA Server}{15}
+\contentsline {section}{\numberline {11}House-keeping Link Protocol (HLP)}{16}
+\contentsline {section}{\numberline {12}\bf Dictionary of Abbreviations }{17}
