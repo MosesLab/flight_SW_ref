@@ -1,2 +1,6 @@
 \section{High-Speed Telemetry}
 \hrulefill
+\\
+The Telemetry thread is generally initialized with the lowest priority because it has little interference and only becomes active once the others have. Its function is to detect objects in the telemetry queue, which is only written to by Image Writer. When the queue updates and the semaphore is released, the Telemetry thread accepts the next pointer and begins streaming it to the Synclink board. Two copies of the board are used, one transmitting (flight) and one receiving (ground). The two are connected by the Pre-mod filter, which converts the signal to analog via the provided RF link ???.
+
+Meanwhile on the ground, the Ground Station laptop shall be running the 'receive\_TM' program, which processes the signal from the receiving Synclink. Each full transmission of the three channels takes about 10.1 seconds; each xml file takes approximately 0.5 seconds, but this value increases with the number of completed exposures. The image is then reconstructed, saved locally, and shall be displayed on the laptop using a custom IDL interpreter.
