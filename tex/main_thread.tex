@@ -3,4 +3,4 @@
 \section{Main Thread}
 \hrulefill
 \\
-Program initialization begins with the configuration file moses.conf. Each setting in the file specifies an individual thread or method of communication and is assigned a one (ON) or zero (OFF) for toggling during the debug process. Upon startup, the Main thread opens and proceeds to activate each ON thread. The order of threads in moses.conf designates their load order; i.e. items listed higher will have higher priority. During flight, every option shall be set to ON. After each has started, the Main thread is done and simply waits for program exit. 
+Program initialization begins with the configuration file 'moses.conf'. Each setting in the file specifies an individual thread or method of communication and is assigned a one (ON) or zero (OFF) for toggling during the debug process. Upon startup, the Main thread opens and proceeds to activate each ON thread. The order of threads in moses.conf designates their load order; i.e. items listed higher will have higher priority. During flight, every option shall be set to ON. After each thread has successfully started, the Main thread is done and simply waits for program exit. 

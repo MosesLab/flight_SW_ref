@@ -3,15 +3,13 @@
 \section{Image Writer Thread}
 \hrulefill
 \\
-Image Writer Thread... 
 
-Through time testing, it was determined that previous revisions took approximately one second to write each ROE image to disc. Since this mission is very time-critical, such a delay was deemed too long to happen serially in the Science Timeline thread. Moving it to another thread will result in a large percentage of flight time saved, allowing more exposures to be captured during the flight.
+Through time testing, it was determined that previous revisions took approximately one second to write each ROE image to disc. Since this mission is very time-critical, such a delay was deemed too long to fit serially in the Science Timeline thread. Moving it to another results in a large percentage of flight time saved, allowing more exposures to be captured per flight.
+A ROE image structure is used to store all the image data and meta data for each successful image. Here is a brief overview therein:
 
-A ROE image structure is used to store all the image data and meta data for each image that is read out. Here is a brief overview therein:
-Values for the origin, instrument, observer, and object will typically not change on each flight. However, if this software was used under different circumstances, these values could be changed to reflect that. 'Bitpix,' the bits per pixel value, along with the width and height, are set……? Channels consists of a single character value that can be ANDed and ORed with channel define values to enable the desired channels. Other values unique to each image include the filename, its actual name, the date and time the exposure started, its duration, the size in pixels of each channel, as well as the number of exposures in that sequence.  
+Identifying values for the origin, instrument, observer, and object will typically not change on each flight. However, if this software were to be used under different circumstances, these values could be changed to reflect that. 'Bitpix,' the bits per pixel value, along with the images' width and height, are set...(???) 'Channels' consists of a single character value that can be ANDed and ORed with defined values to enable or disable each channel as required. For ideal exposures, channels 1, 2, and 3 will be enabled while channel 0 (noise) is disabled. Other values unique to each image include the filename, its path, the date and time its exposure started, its duration, the size in pixels of each channel, as well as the total number of exposures in its sequence.  
 
-The image writer thread starts by assigning data to the image structure inside the 'write\_data' function. Once all of these values are assigned, it goes to write the file. This is broken down into two tasks, writing the actual image data to disk, and writing the record file (imageindex.xml) to disc. The xml file contains all of the metadata. 
+The image writer thread starts by assigning data to the image structure inside the 'write\_data' function. Once all of these values are assigned, it goes to write the file. This is subsequently broken down into two tasks: writing the actual image data to disk, and writing the record file (imageindex.xml) to disc. The xml file contains all of the metadata. 
 
-
-Rather than be discarded after saving, the files are kept in memory (aside from the noise channel, which is only saved locally). A pointer to the file is placed into the telemetry queue for transmission to the ground. This way, many images may be retrieved before touchdown and without requiring survival of the payload. An updated version of the xml file is also sent to the queue between each image.
+Rather than be discarded after saving, the files are kept in memory (aside from the noise channel, which is only saved locally). A pointer to it is placed into the telemetry queue for transmission to the ground. This way, many images may be retrieved before touchdown and without requiring survival of the payload. An updated version of the xml file is also sent to the queue between each image.
 
