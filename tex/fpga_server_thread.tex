@@ -3,4 +3,4 @@
 \section{FPGA Server}
 \hrulefill
 \\
-FPGA Server Thread...
+The FPGA Server thread mediates communications with the FPGA and the rest of the flight software. The FPGA is critically important to the goals of the MOSES instrument, as it is the electronics that receives the experimental data from the cameras, as well as managing the GPIO input/output lines which control the instrument and the execution of the flight software. Since there are many different threads that depend on the FPGA for their execution, we implemented the FPGA Server thread to avoid thread contention issues between different parts of the program.

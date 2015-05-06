@@ -3,10 +3,11 @@
 \section{Housekeeping Link Protocol (HLP)}
 \hrulefill
 \subsection{HLP Control Thread}
+The HLP Control thread listens for incoming HLP packets and then takes the appropriate action based on the content of the packet.
 
 \subsection{HLP Down Thread}
+The HLP Down thread is attached to the HLP Down queue. As the different threads in the flight software produce HLP packets that need to be sent to ground, they enqueue it onto the HLP Down queue. The HLP Down thread dequeues these packets one-by-one and sends it to the ground via a RS-232 serial port.
 
 \subsection{Virtual Shell}
-
 \subsection{HLP Shell Output Thread}
 
