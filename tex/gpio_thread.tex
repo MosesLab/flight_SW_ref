@@ -3,4 +3,4 @@
 \section{GPIO Control Thread }
 \hrulefill
 \\
-GPIO Thread...
+The GPIO Control thread is the primary means of controlling the software during flight. After launch, Timers will be raised by the NASA telemetry section. These Timers are set to inform the experiment when to begin Dark sequences, Data sequences, when to stop taking Data sequences, and when to shut the computer down. The Timers are not connected directly to the GPIO Control thread, rather they are mediated by the FPGA Server thread. When the FPGA Server thread receives a Timer, it is enqueued onto the GPIO input queue where it can be interpreted by the GPIO Control thread.

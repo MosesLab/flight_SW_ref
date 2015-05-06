@@ -1,9 +1,11 @@
 \documentclass[11pt,titlepage]{article}
 
+\usepackage{hyperref}
 \usepackage[margin=1in]{geometry} 
 \usepackage{long table} % long tables
 \usepackage{pdflscape}
 \usepackage{graphicx}
+
 
 
 \title{MOSES Flight Software \\ A Guide to the Source}
@@ -37,6 +39,13 @@
 
 \include{intro}
 \include{main_subsystems}
+\begin{landscape}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=22.5cm]{images/hw_block}
+\caption{Block diagram summarizing the hardware architecture for interfacing with the MOSES instrument.}
+\end{figure}
+\end{landscape}
 \include{specifications}
 \include{architecture}
 \begin{landscape}
@@ -46,6 +55,7 @@
 \caption{Block diagram summarizing the flight software architecture.}
 \end{figure}
 \end{landscape}
+
 \include{main_thread}
 \include{sci_timeline_thread}
 \include{image_writer_thread}

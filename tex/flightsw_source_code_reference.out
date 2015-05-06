@@ -1,0 +1,18 @@
+\BOOKMARK [1][-]{section.1}{Revisions}{}% 1
+\BOOKMARK [1][-]{section.2}{Introduction}{}% 2
+\BOOKMARK [1][-]{section.3}{Main Subsystems}{}% 3
+\BOOKMARK [1][-]{section.4}{Requirements for Operating the MOSES Instrument}{}% 4
+\BOOKMARK [1][-]{section.5}{Architecture Description}{}% 5
+\BOOKMARK [1][-]{section.6}{Main Thread}{}% 6
+\BOOKMARK [1][-]{section.7}{Science Timeline Thread}{}% 7
+\BOOKMARK [2][-]{subsection.7.1}{Read Out Electronics \(ROE\)}{section.7}% 8
+\BOOKMARK [1][-]{section.8}{Image Writer Thread}{}% 9
+\BOOKMARK [1][-]{section.9}{GPIO Control Thread }{}% 10
+\BOOKMARK [1][-]{section.10}{FPGA Server}{}% 11
+\BOOKMARK [1][-]{section.11}{Housekeeping Link Protocol \(HLP\)}{}% 12
+\BOOKMARK [2][-]{subsection.11.1}{HLP Control Thread}{section.11}% 13
+\BOOKMARK [2][-]{subsection.11.2}{HLP Down Thread}{section.11}% 14
+\BOOKMARK [2][-]{subsection.11.3}{Virtual Shell}{section.11}% 15
+\BOOKMARK [2][-]{subsection.11.4}{HLP Shell Output Thread}{section.11}% 16
+\BOOKMARK [1][-]{section.12}{High-Speed Telemetry}{}% 17
+\BOOKMARK [1][-]{section.13}{Dictionary of Abbreviations }{}% 18
