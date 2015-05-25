@@ -15,4 +15,6 @@
 \contentsline {subsection}{\numberline {11.3}Virtual Shell}{17}{subsection.11.3}
 \contentsline {subsection}{\numberline {11.4}HLP Shell Output Thread}{17}{subsection.11.4}
 \contentsline {section}{\numberline {12}High-Speed Telemetry}{18}{section.12}
-\contentsline {section}{\numberline {13}\bf Dictionary of Abbreviations }{19}{section.13}
+\contentsline {section}{\numberline {13}Configuring the VDX}{19}{section.13}
+\contentsline {section}{\numberline {14}Configuring Serial Ports}{19}{section.14}
+\contentsline {section}{\numberline {15}\bf Dictionary of Abbreviations }{21}{section.15}
