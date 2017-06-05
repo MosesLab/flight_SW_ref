@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Revisions}{}% 1
+\BOOKMARK [1][-]{section.2}{Introduction}{}% 2
+\BOOKMARK [1][-]{section.3}{EGSE Server}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Uplink/Downlink Com Port}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{TCP IP Server}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{UDP Server}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.4}{Packets Received/Sent Windows}{section.3}% 7
+\BOOKMARK [1][-]{section.4}{EGSE Client}{}% 8
+\BOOKMARK [2][-]{subsection.4.1}{Timer}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.2}{Shell}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.3}{Power}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.4}{Housekeeping}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.5}{Custom Uplink}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.6}{MDAQ}{section.4}% 14
+\BOOKMARK [1][-]{section.5}{Setup}{}% 15
+\BOOKMARK [2][-]{subsection.5.1}{Operation}{section.5}% 16
+\BOOKMARK [1][-]{section.6}{Dictionary of Abbreviations}{}% 17
