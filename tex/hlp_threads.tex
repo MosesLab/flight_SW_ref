@@ -9,5 +9,7 @@ The HLP Control thread listens for incoming HLP packets and then takes the appro
 The HLP Down thread is attached to the HLP Down queue. As the different threads in the flight software produce HLP packets that need to be sent to ground, they enqueue it onto the HLP Down queue. The HLP Down thread dequeues these packets one-by-one and sends it to the ground via a RS-232 serial port.
 
 \subsection{Virtual Shell}
-\subsection{HLP Shell Output Thread}
+The Virtual Shell is an alternative way to write commands to the flight computer, rather than performing an \texttt{ssh} into the flight computer. Commands typed into the virtual shell are wrapped in HLP packets and are sent to the flight computer, where it is then executed.
 
+\subsection{HLP Shell Output Thread}
+The HLP Shell Output thread waits for output from the virtual shell, and if there is an output, it is sent to the HK Down queue. From there it is sent to the HLP Down thread. See Figure 2 for a more detailed description of threads in the flight computer.

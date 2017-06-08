@@ -2,19 +2,17 @@
 \contentsline {section}{\numberline {2}Introduction}{3}{section.2}
 \contentsline {section}{\numberline {3}Main Subsystems}{4}{section.3}
 \contentsline {section}{\numberline {4}Requirements for Operating the MOSES Instrument}{7}{section.4}
-\contentsline {section}{\numberline {5}Architecture Description}{9}{section.5}
-\contentsline {section}{\numberline {6}Main Thread}{11}{section.6}
-\contentsline {section}{\numberline {7}Science Timeline Thread}{12}{section.7}
-\contentsline {subsection}{\numberline {7.1}Read Out Electronics (ROE)}{12}{subsection.7.1}
-\contentsline {section}{\numberline {8}Image Writer Thread}{14}{section.8}
-\contentsline {section}{\numberline {9}GPIO Control Thread }{15}{section.9}
-\contentsline {section}{\numberline {10}FPGA Server}{16}{section.10}
-\contentsline {section}{\numberline {11}Housekeeping Link Protocol (HLP)}{17}{section.11}
-\contentsline {subsection}{\numberline {11.1}HLP Control Thread}{17}{subsection.11.1}
-\contentsline {subsection}{\numberline {11.2}HLP Down Thread}{17}{subsection.11.2}
-\contentsline {subsection}{\numberline {11.3}Virtual Shell}{17}{subsection.11.3}
-\contentsline {subsection}{\numberline {11.4}HLP Shell Output Thread}{17}{subsection.11.4}
-\contentsline {section}{\numberline {12}High-Speed Telemetry}{18}{section.12}
-\contentsline {section}{\numberline {13}Configuring the VDX}{19}{section.13}
-\contentsline {section}{\numberline {14}Configuring Serial Ports}{19}{section.14}
-\contentsline {section}{\numberline {15}\bf Dictionary of Abbreviations }{21}{section.15}
+\contentsline {section}{\numberline {5}Architecture Description}{10}{section.5}
+\contentsline {section}{\numberline {6}Main Thread}{12}{section.6}
+\contentsline {section}{\numberline {7}Science Timeline Thread}{13}{section.7}
+\contentsline {subsection}{\numberline {7.1}Read Out Electronics (ROE)}{13}{subsection.7.1}
+\contentsline {section}{\numberline {8}Image Writer Thread}{15}{section.8}
+\contentsline {section}{\numberline {9}GPIO Control Thread }{16}{section.9}
+\contentsline {section}{\numberline {10}FPGA Server}{17}{section.10}
+\contentsline {section}{\numberline {11}Housekeeping Link Protocol (HLP)}{18}{section.11}
+\contentsline {subsection}{\numberline {11.1}HLP Control Thread}{18}{subsection.11.1}
+\contentsline {subsection}{\numberline {11.2}HLP Down Thread}{18}{subsection.11.2}
+\contentsline {subsection}{\numberline {11.3}Virtual Shell}{18}{subsection.11.3}
+\contentsline {subsection}{\numberline {11.4}HLP Shell Output Thread}{18}{subsection.11.4}
+\contentsline {section}{\numberline {12}High-Speed Telemetry}{19}{section.12}
+\contentsline {section}{\numberline {13}\bf Dictionary of Abbreviations }{20}{section.13}

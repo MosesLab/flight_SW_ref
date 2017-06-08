@@ -8,11 +8,11 @@
 	\begin{enumerate}
 		\item Shutter Driver: Must be activated to control the shutter.
 		\item ROE: Must be activated to readout and flush the CCDs for exposures.
-		\item Premod Filter: This system must be activated for high-speed telemetry to be used. It uses a hardware random number generator to randomize the telemetry data. This is important as the telemetry stream must have equal numbers of ones and zeros to be properly reconstructed on the ground.
+		\item Premod Filter: This system must be activated for high-speed telemetry to be used. It uses a hardware random number generator to randomize the telemetry data. This is important as the telemetry stream must have equal numbers of ones and zeros to be properly reconstructed on the ground. \textbf{NOTE: The Premod filter is a deprecated system and will no longer be used for MOSES-III and subsequent missions.}
 		\item Temperature Control Systems: These systems provide cooling to the instrument while under vaccum. The CCDs are cooled using this system to minimize the noise inherent in the CCDs. The flight computer must also be cooled under vacuum to prevent overheating, as it is normally air-cooled. It must be noted that this system is NOT to be turned on while the instrument is at atmospheric pressure.
 		\item 5V Regulator: This must be on to provide the premod filter with a -5V rail.
 		\item 12V Regulator: Among other things, this subsytem activates the analog telemetry monitoring.
-		\item H-$\alpha$ Camera: This camera is used in flight as a targeting system, to ensure the attitude of the payload is appropriate. This is an analog system, so the data produced by the H-$\alpha$ camera is not moderated by the flight computer, it is only activated through the flight computer.
+		\item H-$\alpha$ Camera: This camera is used in flight as a targeting system, to ensure the attitude of the payload is appropriate. This is an analog system, so the data produced by the H-$\alpha$ camera is not moderated by the flight computer, it is only activated through the flight computer. \textbf{NOTE: The H-$\alpha$ Camera is no longer being used for MOSES-III and subsequent missions. For the MOSES-III/ESIS mission, the ESIS instrument will be responsible for pointing the payload.}
 	\end{enumerate}
 The flight software is directed to turn on/off power systems through HLP packets sent by the EGSE.
 
