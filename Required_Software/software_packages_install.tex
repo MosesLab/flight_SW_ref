@@ -1,0 +1,106 @@
+\documentclass[11pt,a4paper,titlepage]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[margin=0.75in]{geometry}
+\author{Nicholas Bonham and Roy Smart}
+\title{Necessary Software/Programs for Operating MOSES Flight Computer}
+\begin{document}
+	\maketitle
+	
+	\tableofcontents
+	
+	\newpage
+	\section{Introduction}
+	This document is a list of software and programs necessary to develop and operate the MOSES Flight Computer, as well as programs necessary for the MOSES telemetry server. Also included are useful commands for installing these programs on Debian/Ubuntu OS. Commands will be highlighted in light gray and written in typewriter font: \\ \colorbox{lightgray}{\texttt{The quick brown fox jumps over the lazy dog}}. \\ A short description of the programs will also be provided.\\ \\
+	\textbf{Note}: The download commands stated in this document assume a version of Ubuntu greater than 16.04 using \colorbox{lightgray}{\texttt{sudo apt install $\langle$package$\rangle$}}. For versions of Ubuntu older than 16.04, the install command requires \colorbox{lightgray}{\texttt{sudo apt-get install $\langle$package$\rangle$}}. However, for Ubuntu 16.04 and later, both of these commands work.
+	
+	\section{NetBeans 7.4}
+	The NetBeans IDE is a development kit for programming languages such as Java, JavaScript, C/C++, HTML, and others. NetBeans is also a free, open source program with extensive community forums to help with programming or formatting questions. The version of NetBeans used for the development of the MOSES FC is NetBeans 7.4. This kit has dependencies on the Java Development Kit (JDK) and Java SE Runtime Environment (JRE). JDK 7 is specifically required for NetBeans 7.4. Before downloading NetBeans 7.4 from the NetBeans website, JRE and JDK 7 must be installed. \\
+	\\
+	The NetBeans website is found at this link: \url{https://netbeans.org/}, including the download page, all documentation, and the NetBeans community. \\ 
+	The download page for NetBeans 7.4 is found at: \url{https://netbeans.org/downloads/7.4/}. The ``All" bundle is encouraged for download, as it contains everything, including the packages for multiple programming languages. Once JRE and/or JDK 7 are installed, the downloaded NetBeans installer can be run by going to the Downloads folder and typing using the command line: \\
+	\\
+	\colorbox{lightgray}{\texttt{chmod +x netbeans-7.4-linux.sh}} \\
+	\\
+	\colorbox{lightgray}{\texttt{./netbeans-7.4-linux.sh}}
+	
+	\subsection{Install JRE}
+	 Documentation of the Java SE Runtime Environment can be found on the Oracle website: \url{http://www.oracle.com/technetwork/java/javase/overview/index.html}.\\
+	  Installing JRE is simply done using the command line in Linux. To install JRE, type: \\
+	  \\
+	 \colorbox{lightgray}{\texttt{sudo apt install default-jre}}.
+	 
+	 \subsection{Install JDK 7}
+	 JDK 7 is an older version of the Java Development Kit, so the documentation on it cannot be found on Oracle's latest JDK page. Instead, all documentation can be found at the following address: \url{http://docs.oracle.com/javase/7/docs/webnotes/install/}. As stated at the Oracle website, JDK includes the JRE package, so one doesn't need to download them separately. Downloading JRE alone allows the user to run programs but not develop them. Just like the JRE package, JDK 7 is acquired through the Linux command line using the following commands: \\
+	 \\
+	 \colorbox{lightgray}{\texttt{sudo apt install openjdk-7-jre}} \\
+	 \\
+	 \colorbox{lightgray}{\texttt{sudo apt install openjdk-7-jdk}}
+	 
+	 \subsection{Build Essential}
+	 Build essential is a Ubuntu package necessary for compiling any C/C++ source code that the user writes. Known as a meta-package, it contains other packages in it that are required for C/C++ compilation. It can be installed in the command line by typing: \\
+	 \\
+	 \colorbox{lightgray}{\texttt{sudo apt install build-essential}}
+	 
+	 \subsection{GDB}
+	 GDB stands for the GNU Debugger. It is a debugging package that is useful for seeing what is happening in an executing program. GDB gives the user the ability to step through code line-by-line to see how the program operates. GDB is installed in the command line by typing: \\
+	 \\
+	 \colorbox{lightgray}{\texttt{sudo apt install gdb}}
+	 
+	 \section{Minicom}
+	 Minicom is a program that emulates the terminal in Unix-like systems. A popular use for minicom is communicating with external RS-232 devices, such as the flight computer. Everything in minicom is text-based, and is very similar to the command line in Linux. In the scope of the MOSES FC, minicom is used as a way to see the processes happening in the flight computer, and acts as a pseudo monitor. Minicom is another program that is easily installed from the command line: \\
+	 \\ 
+	 \colorbox{lightgray}{\texttt{sudo apt install minicom}} \\
+	 \\
+	 Some useful information for installing and using minicom can be found at this website and at other websites around the internet. \\ \url{https://www.cyberciti.biz/tips/connect-soekris-single-board-computer-using-minicom.html}
+	 
+	 \section{Pycharm}
+	 Pycharm IDE is another development kit made by Jetbrains. It is made specifically for writing, editing, running, and debugging programs written in Python. Pycharm is offered as a Professional, paid software, or as a free community edition. Some functionality is sacrificed in the community edition, but for the intent of the Kankelborg Lab, the community edition works beautifully. \\
+	 Downloading pycharm is done from the Jetbrains website at the following URL: \url{https://www.jetbrains.com/pycharm/}. Documentation, demos, features, and purchasing options are all found at this page. \\
+	 The download from the website is a tar.gz file containing everything necessary to install Pycharm, including installation instructions. To open/extract tar.gz files from the command line, use the commands: \\
+	 \\
+	 \colorbox{lightgray}{\texttt{tar -xvzf \textit{filename}.tar.gz}} \\
+	 \\
+	 Once this has been done, navigate to the Pycharm community folder, and then to the bin folder. There should be a pycharm.sh file there to be executed. A possible list of commands are: \\
+	 \\
+	 \colorbox{lightgray}{\texttt{cd pycharm-community-2017.2/bin/}} \\
+	 \\
+	 \colorbox{lightgray}{\texttt{./pycharm.sh}} \\
+	 \\
+	 From there, the installer will pop up and the rest is intuitive to follow.
+	 
+	 \subsection{Python}
+	 In order to write/edit/run/debug programs written in Python, the Python language needs to be downloaded. The specific version used at the time of this document is Python 2.7.12. The download can be made at the python website: \url{https://www.python.org/downloads/}. There are also plenty of documentation and community forums at the python website and all over the internet. \\
+	 \\
+	 To install Python packages, use the pip tools. Pip is installed using the following commands: \\
+	 \\
+	 \colorbox{lightgray}{\texttt{sudo apt install python3-pip}} \\
+	 \\
+	 
+	 The packages used for the MOSES telemetry server are \texttt{pyusb} and \texttt{pyserial}. To install these packages, the command lines use the pip installer: \\
+	 \\
+	 \colorbox{lightgray}{\texttt{sudo pip3 install pyserial}} \\
+	 \\
+	 \colorbox{lightgray}{\texttt{sudo apt install python3-setuptools}} \\
+	 \\
+	 \colorbox{lightgray}{\texttt{sudo pip3 install pyusb}}\\
+	 \\
+	 The setup tools package is a required dependence for the pyusb package. 
+	 
+	 \section{Xterm}
+	 Xterm is an application that acts as a terminal emulator for the X Window System. In the scope of the MOSES FC, it is used in the EGSE Client for the virtual shell. This shell allows us to communicate using commands in the command line. Installing xterm is done through the Linux command line using the following commands: \\
+	 \\
+	 \colorbox{lightgray}{\texttt{sudo apt install xterm}} \\
+	 \\
+	 Documentation for the use of xterm can be found at this website: \url{https://www.x.org/archive/X11R6.7.0/doc/xterm.1.html}
+	 
+	 
+	
+	 
+	
+\end{document}
